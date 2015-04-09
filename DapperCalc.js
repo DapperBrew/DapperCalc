@@ -4,9 +4,9 @@ var dapperCalc = (function () {
 	// og = number | Original Gravity | ex: 1.088
 	// fg - number | Final Gravity | ex: 1.018
   var abv = function (og, fg) {
-    if( og > fg && !isNaN(og) && !isNaN(fg) ) {
+    if( og > fg && dapperHelp.isNum(og, fg) ) {
     	var calc = (((1.05 * (og - fg)) / fg) / 0.79) * 100;
-    	return Math.round(calc * 10) / 10;
+    	return Math.round(calc * 100) / 100;
     }
     else {
     	return null;
@@ -17,11 +17,10 @@ var dapperCalc = (function () {
 	// og = number | Original Gravity | ex: 1.088
 	// fg - number | Final Gravity | ex: 1.018
   var abw = function (og, fg) {
-    if( og > fg && !isNaN(og) && !isNaN(fg) ) {
+    if( og > fg && dapperHelp.isNum(og, fg) ) {
     	var theabv = abv(og, fg);
-    	console.log(abv(og,fg));
-    	var calc = ((abv(og,fg) * 0.79336) / fg);
-    	return Math.round(calc * 10) / 10;
+    	var calc = (theabv * 0.79336) / fg);
+    	return Math.round(calc * 100) / 100;
     }
     else {
     	return null;
@@ -32,7 +31,7 @@ var dapperCalc = (function () {
   // weight = number | ounces of hops
   // aa = number | Alpha Acids percentage
   var aau = function (weight, aa) {
-  	if (!isNaN(weight) && !isNaN(aa)) {
+    if (dapperHelp.isNum(weight, aa)) {
   		return weight * aa;
   	}
   	else {
@@ -46,7 +45,7 @@ var dapperCalc = (function () {
   // gravity = number | gravity of wort when adding hops
   // http://realbeer.com/hops/research.html
   var utilization = function(time, gravity) {
-  	if (!isNaN(time) && !isNaN(gravity)) {
+    if (dapperHelp.isNum(time,gravity)) {
   		var bigness = (1.65 * Math.pow(0.000125,(gravity - 1)));
   		var timeFactor = (1 - Math.pow(Math.E,(-0.04 * time))) / 4.15;
   		return bigness * timeFactor;
@@ -65,7 +64,7 @@ var dapperCalc = (function () {
   // volume = number | post boil Volume
 
   var ibu = function(weight, aa, time, gravity, volume) {
-  	if (!isNaN(weight) && !isNaN(aa) && !isNaN(time) && !isNaN(gravity) && !isNaN(volume)) {
+    if (dapperHelp.isNum(weight,aa,time,gravity,volume)) {
   		calc = (aau(weight, aa) * utilization(time, gravity) * 74.89) / volume;
   		// multiply by 1.1 to account for pellet vs whole hop
   		calc = calc * 1.1;
