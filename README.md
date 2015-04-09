@@ -1,6 +1,6 @@
 # DapperCalc
 
-DapperCalc contains various calculations that power DapperBrew 
+DapperCalc contains various calculations that power DapperBrew. This work is ongoing. Calculations may be incomplete, or incorrect. 
 
 ## Methods
 
@@ -81,6 +81,6 @@ dapperCalc.ibu(1.5, 12, 60, 1.048, 5.5);
 // 63.3
 ```
 
-**Forumla:**
-*ibu = (aau x utilization x 74.89) / volume*
+**Forumla:**  
+*ibu = (aau x utilization x 74.89) / volume*  
 *adjust for pellets hops = ibu * 1.1*
