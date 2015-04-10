@@ -5,12 +5,14 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 ### TODO
 - [x] abv
 - [x] abw
+- [x] plato2sg
+- [x] sg2plato
 - [x] aau
 - [x] utilization
 - [x] ibu
-- [ ] srm
-- [ ] calroies
-- [ ] plato
+- [x] mcu
+- [x] srm
+- [ ] calories
 - [ ] brix2sg
 - [ ] sg2brix
 - [ ] attenuation
@@ -45,9 +47,36 @@ Calculates the alcohol by weight (abw) from the original gravity of the wort (og
 dapperCalc.abw(1.088, 1.013);
 // 7.71
 ```
-
 **Forumla:**  
 *abw = (abv x 0.79336) / fg*
+
+### dapperCalc.sg2plato(sgravity)
+
+Converts specific gravity (sg) to plato. Can also be used for sg to brix.
+
+* sgravity: specific gravity of wort/beer
+
+```javascript
+dapperCalc.sg2plato(1.088);
+// 21.1
+```
+
+**Forumla:**  
+*plato = (-616.868) + (1111.14 x sgravity) - (630.272 x sgravity^2) + (135.997 x sgravity^3)*
+
+### dapperCalc.plato2sg
+
+Converts plato to specific gravity. Can also be used for brix to sg.
+
+* plato: density of beer in plato (can also be brix)
+
+```javascript
+dapperCalc.plato2sg(18);
+// 1.074
+```
+
+**Forumula:**  
+*sg = plato / (258.6 -((plato / 258.2) x 227.1)) + 1*
 
 ### dapperCalc.aau(weight, aa)
 
@@ -85,7 +114,7 @@ dapperCalc.utilization(60, 1.048);
 
 Calculates the International Bittering Units (IBU) for a single hop addition. This uses Tinseth calculations. Currently assumes pellets are used.
 
-* weight: ounces of hops
+* weight: weight of hops (oz)
 * aa: alpha acids percentage of hop used
 * time: time left in boil
 * gravity: gravity of wort when adding hops
@@ -99,3 +128,35 @@ dapperCalc.ibu(1.5, 12, 60, 1.048, 5.5);
 **Forumla:**  
 *ibu = (aau x utilization x 74.89) / volume*  
 *adjust for pellets hops = ibu x 1.1*
+
+### dapperCalc.mcu(weight, lovibond, volume)
+
+Calculates Malt Color Unit (MCU) for a grain addition
+
+* weight: weight of grain (lb)
+* lovibond: Degrees Lovibond for grain
+* volume: volume of batch. Should be post-boil volume after cooling
+
+```javascript
+dapperCalc.mcu(9, 3.5, 5.5);
+// 5.72
+```
+
+**Forumula**  
+*mcu =  (weight x lovibond) / volume*
+
+### dapperCalc.srm(mcu1, mcu2, ...)
+
+Calculates color of the beer using Standard Reference Method (Morey equation). Can accept an infite # of arguments.
+
+* mcu1: MCU for a grain addition. Number can be calculated using dapperCalc(mcu)
+
+```javascript
+dapperCalc.srm(5.72);
+// 4.9
+dapperCalc.srm(5.72, 2.54);
+// 6.4
+```
+
+**Forumula**
+*srm = 1.4922 x (MCU x 0.6859)*

@@ -27,6 +27,32 @@ var dapperCalc = (function () {
     }
   };
 
+  // Specific Gravity (sg) to plato
+  // can also be used for sg to brix
+  // sgravity = number | specific gravity
+  var sg2plato = function(sgravity) {
+    if (dapperHelp.isNum(sgravity)) {
+      calc = (-616.868) + (1111.14 * sgravity) - (630.272 * Math.pow(sgravity, 2)) + (135.997 * Math.pow(sgravity, 3));
+      return Math.round(calc * 10) / 10;
+    }
+    else {
+      return null;
+    }
+  };
+
+  // plato to sg (specific gravity)
+  // can also be used for brix to sg
+  // plato = number | plato or brix
+  var plato2sg = function(plato) {
+    if (dapperHelp.isNum(plato)) {
+      calc = ( plato / ( 258.6 - ( ( plato / 258.2 ) * 227.1 ) ) + 1);
+      return Math.round(calc * 1000) / 1000;
+    }
+  };
+
+  //SG = 1+ (plato / (258.6 – ( (plato/258.2) *227.1) ) )
+
+
   // aau (Alpha Acid Units)
   // weight = number | ounces of hops
   // aa = number | Alpha Acids percentage
@@ -83,6 +109,9 @@ var dapperCalc = (function () {
     if (dapperHelp.isNum(weight, lovibond, volume)) {
       return (weight * lovibond) / volume;
     }
+    else {
+      return null;
+    }
   };
 
   // SRM (standard reference method)
@@ -93,9 +122,15 @@ var dapperCalc = (function () {
     var args = arguments;
     var totalMcu = 0;
     for (var i = 0; i < args.length; i++) {
-      totalMcu += args[i];
+      if (dapperHelp.isNum()) {
+        totalMcu += args[i];
+      }
+      else {
+        return null;
+      }
     }
-    return 1.4922 * (Math.pow(totalMcu, 0.6859));
+    calc = 1.4922 * (Math.pow(totalMcu, 0.6859));
+    return Math.round(calc * 10) / 10;
   };
 
 
@@ -107,6 +142,8 @@ var dapperCalc = (function () {
   return {
     abv: abv,
     abw: abw,
+    sg2plato: sg2plato,
+    plato2sg: plato2sg,
     aau: aau,
     utilization: utilization,
     ibu: ibu,
