@@ -2,6 +2,21 @@
 
 DapperCalc contains various calculations that power DapperBrew. This work is ongoing. Calculations may be incomplete, or incorrect. 
 
+### TODO
+- [x] abv
+- [x] abw
+- [x] aau
+- [x] utilization
+- [x] ibu
+- [ ] srm
+- [ ] calroies
+- [ ] plato
+- [ ] brix2sg
+- [ ] sg2brix
+- [ ] attenuation
+- [ ] plato
+
+
 ## Methods
 
 ### dapperCalc.abv(og, fg)
@@ -51,7 +66,7 @@ dapperCalc.aau(1.5, 12);
 
 ### dapperCalc.utilization(time, gravity)
 
-Calculates hop utilization based on the time left in boil, and gravity of wort. Primarily used in IBU calculations.
+Calculates hop utilization based on the time left in boil, and gravity of wort. Primarily used in IBU calculations. Uses Tinseth calculations.
 
 * time: time left in boil
 * gravity: gravity of wort when adding hops
@@ -62,9 +77,9 @@ dapperCalc.utilization(60, 1.048);
 ```
 
 **Forumla:**  
-*bigness factor = 1.65 * 0.000125^(wort gravity - 1)*  
+*bigness factor = 1.65 x 0.000125^(wort gravity - 1)*  
 *boil time Factor = ( 1 - e^(-0.04 x time in mins) ) / 4.15*  
-*utilization = bigness factor * boil time factor*
+*utilization = bigness factor x boil time factor*
 
 ### dapperCalc.ibu(weight, aa, time, gravity, volume)
 
@@ -83,4 +98,4 @@ dapperCalc.ibu(1.5, 12, 60, 1.048, 5.5);
 
 **Forumla:**  
 *ibu = (aau x utilization x 74.89) / volume*  
-*adjust for pellets hops = ibu * 1.1*
+*adjust for pellets hops = ibu x 1.1*

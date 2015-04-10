@@ -19,7 +19,7 @@ var dapperCalc = (function () {
   var abw = function (og, fg) {
     if( og > fg && dapperHelp.isNum(og, fg) ) {
     	var theabv = abv(og, fg);
-    	var calc = (theabv * 0.79336) / fg);
+    	var calc = ((theabv * 0.79336) / fg);
     	return Math.round(calc * 100) / 100;
     }
     else {
@@ -62,7 +62,6 @@ var dapperCalc = (function () {
   // time = number | time left in boil
   // gravity = number | gravity of wort when adding hops
   // volume = number | post boil Volume
-
   var ibu = function(weight, aa, time, gravity, volume) {
     if (dapperHelp.isNum(weight,aa,time,gravity,volume)) {
   		calc = (aau(weight, aa) * utilization(time, gravity) * 74.89) / volume;
@@ -75,14 +74,45 @@ var dapperCalc = (function () {
   	}
   };
 
+  // MCU (Malt Color Units)
+  // weight = number | weight of grains
+  // lovibond = number | color of grains in lovibond
+  // volume = number | batch size + deadspace/trub loss
+  // Morey's Formula
+  var mcu = function(weight, lovibond, volume) {
+    if (dapperHelp.isNum(weight, lovibond, volume)) {
+      return (weight * lovibond) / volume;
+    }
+  };
 
-  
+  // SRM (standard reference method)
+  // accepts infinite # of arguments (MCU)
+  // arguments = number | MCU (Malt Color Units)
+  // Morey's Formula
+  var srm = function() {
+    var args = arguments;
+    var totalMcu = 0;
+    for (var i = 0; i < args.length; i++) {
+      totalMcu += args[i];
+    }
+    return 1.4922 * (Math.pow(totalMcu, 0.6859));
+  };
+
+
+
+  var test = function() {
+  };
+
+
   return {
     abv: abv,
     abw: abw,
     aau: aau,
     utilization: utilization,
-    ibu: ibu
+    ibu: ibu,
+    mcu: mcu,
+    srm: srm,
+    test: test
   };
 
 })();
