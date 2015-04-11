@@ -12,11 +12,19 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 - [x] ibu
 - [x] mcu
 - [x] srm
-- [ ] calories
-- [ ] brix2sg
-- [ ] sg2brix
-- [ ] attenuation
-- [ ] plato
+- [x] real extract
+- [x] calories
+- [x] apparent attenuation
+- [x] real attenuation
+- [ ] dilution calc
+- [ ] water addition
+- [ ] malt addition
+- [ ] weight to volume
+- [ ] boil off
+- [ ] refractometer reading adjustment
+- [ ] hydromteter temp adjust
+- [ ] yeast starter
+
 
 
 ## Methods
@@ -64,7 +72,7 @@ dapperCalc.sg2plato(1.088);
 **Forumla:**  
 *plato = (-616.868) + (1111.14 x sgravity) - (630.272 x sgravity^2) + (135.997 x sgravity^3)*
 
-### dapperCalc.plato2sg
+### dapperCalc.plato2sg(plato)
 
 Converts plato to specific gravity. Can also be used for brix to sg.
 
@@ -75,8 +83,72 @@ dapperCalc.plato2sg(18);
 // 1.074
 ```
 
-**Forumula:**  
+**Formula:**  
 *sg = plato / (258.6 -((plato / 258.2) x 227.1)) + 1*
+
+### dapperCalc.realExtract(og, fg)
+
+Calculates the real extract (measure of the sugars which are fermented).  
+See: http://hbd.org/ensmingr/
+
+* og: original gravity
+* fg: final gravity
+
+```javascript
+dapperCalc.realExtract(1.088, 1.012);
+// 6.3544
+```
+
+**Formula:**  
+*realExtract = (0.1808 × °Pi) + (0.8192 × °Pf)*
+
+### dapperCalc.calories(og, fg)
+
+Calculates number of calories in 12oz.  
+see: http://hbd.org/ensmingr/
+
+* og: original gravity
+* fg: final gravity
+
+```javascript
+dapperCalc.calories(1.088, 1.012);
+// 283.7
+```
+
+**Formula:**  
+*calories = (6.9 x abw + 4.0 x (realExtract - .1)) x fg x 3.55*
+
+### dapperCalc.aAttenuation(og, fg)
+
+Calculates percentage of sugars converted into alcohol and carbon dioxide using apparent extract reading.
+see: http://hbd.org/ensmingr/
+
+* og: original gravity
+* fg: final gravity
+
+```javascript
+dapperCalc.aAttenuation(1.088, 1.012);
+// 85.3
+```
+
+**Formula:**  
+*apparent attenuation = 100 x (1 - (°Pf / °Pi))*
+
+### dapperCalc.rAttenuation(og, fg)
+
+Calculates percentage of sugars converted into alcohol and carbon dioxide using real extract reading.
+see: http://hbd.org/ensmingr/
+
+* og: original gravity
+* fg: final gravity
+
+```javascript
+dapperCalc.rAttenuation(1.088, 1.012);
+// 69.9
+```
+
+**Formula:**  
+*apparent attenuation = 100 x (1 - (real extract / °Pi)*
 
 ### dapperCalc.aau(weight, aa)
 
@@ -142,7 +214,7 @@ dapperCalc.mcu(9, 3.5, 5.5);
 // 5.72
 ```
 
-**Forumula**  
+**Formula**  
 *mcu =  (weight x lovibond) / volume*
 
 ### dapperCalc.srm(mcu1, mcu2, ...)
@@ -158,5 +230,5 @@ dapperCalc.srm(5.72, 2.54);
 // 6.4
 ```
 
-**Forumula**
+**Formula**
 *srm = 1.4922 x (MCU x 0.6859)*

@@ -48,9 +48,66 @@ var dapperCalc = (function () {
       calc = ( plato / ( 258.6 - ( ( plato / 258.2 ) * 227.1 ) ) + 1);
       return Math.round(calc * 1000) / 1000;
     }
+    else {
+      return null;
+    }
   };
 
-  //SG = 1+ (plato / (258.6 – ( (plato/258.2) *227.1) ) )
+  // Real Extract
+  // og = number | original gravity
+  // fg = number | original gravity
+  // http://hbd.org/ensmingr/
+  var realExtract = function(og, fg) {
+    if (dapperHelp.isNum(og, fg)) {
+      return (0.1808 * sg2plato(og)) + (0.8192 * sg2plato(fg));
+    }
+    else {
+      return null;
+    }
+  }
+
+  // calories (total)
+  // for 12oz
+  // og = number | original gravity
+  // fg = number | final gravity
+  // http://hbd.org/ensmingr/
+  var calories = function(og, fg) {
+    if (dapperHelp.isNum(og, fg)) {
+      var calc = (6.9 * dapperCalc.abw(og, fg) + 4.0 * (dapperCalc.realExtract(og,fg) - .1)) * fg * 3.55;
+      return Math.round(calc * 10) / 10;
+    }
+    else {
+      return null
+    }
+  };
+
+  // Apparent Attenuation
+  // og = number | original gravity
+  // fg = number | final gravity
+  // http://hbd.org/ensmingr/
+  var aAttenuation = function(og, fg) {
+    if (dapperHelp.isNum(og, fg)) {
+      calc = 100 * (1 - (dapperCalc.sg2plato(fg)/dapperCalc.sg2plato(og)));
+      return Math.round(calc * 10) / 10;
+    }
+    else {
+      return null;
+    }
+  };
+
+  // Real Attenuation
+  // og = number | original gravity
+  // fg = number | final gravity
+  // http://hbd.org/ensmingr/
+  var rAttenuation = function(og, fg) {
+    if (dapperHelp.isNum(og, fg)) {
+      calc = 100 * (1 - (dapperCalc.realExtract(og,fg) / dapperCalc.sg2plato(og)));
+      return Math.round(calc * 10) / 10;
+    }
+    else {
+      return null;
+    }
+  };
 
 
   // aau (Alpha Acid Units)
@@ -144,6 +201,10 @@ var dapperCalc = (function () {
     abw: abw,
     sg2plato: sg2plato,
     plato2sg: plato2sg,
+    realExtract: realExtract,
+    calories: calories,
+    aAttenuation: aAttenuation,
+    rAttenuation: rAttenuation,
     aau: aau,
     utilization: utilization,
     ibu: ibu,
