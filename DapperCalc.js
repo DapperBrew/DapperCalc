@@ -18,12 +18,12 @@ var dapperCalc = (function () {
 	// fg - number | Final Gravity | ex: 1.018
   var abw = function (og, fg) {
     if( og > fg && dapperHelp.isNum(og, fg) ) {
-    	var theabv = abv(og, fg);
-    	var calc = ((theabv * 0.79336) / fg);
-    	return Math.round(calc * 100) / 100;
+      var theabv = abv(og, fg);
+      var calc = ((theabv * 0.79336) / fg);
+      return Math.round(calc * 100) / 100;
     }
     else {
-    	return null;
+      return null;
     }
   };
 
