@@ -17,8 +17,9 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 - [x] apparent attenuation
 - [x] real attenuation
 - [ ] dilution calc
-- [ ] water addition
-- [ ] malt addition
+- [x] specific gravity to gravity pnits
+- [X] water addition
+- [X] malt addition
 - [ ] weight to volume
 - [ ] boil off
 - [ ] refractometer reading adjustment
@@ -214,7 +215,7 @@ dapperCalc.mcu(9, 3.5, 5.5);
 // 5.72
 ```
 
-**Formula**  
+**Formula:**  
 *mcu =  (weight x lovibond) / volume*
 
 ### dapperCalc.srm(mcu1, mcu2, ...)
@@ -230,5 +231,58 @@ dapperCalc.srm(5.72, 2.54);
 // 6.4
 ```
 
-**Formula**
+**Formula:**
 *srm = 1.4922 x (MCU x 0.6859)*
+
+### dapperCalc.sg2gp(sg)
+
+Converts specific gravity measurement (ex: 1.088) to gravity points (ex: 88)
+
+* sg: specific gravity
+
+```javascript
+dapperCalc.sg2gp(1.088);
+// 88
+```
+
+**Formula:**  
+*gravity points = (sg - 1) * 1000*
+
+### dapperCalc.adjustWater(sg, tg, water)
+
+Calculates how much water should be added to reach target gravity.  
+Returns value in pounds
+
+* sg: specific gravity
+* tg: target gravity
+* volume: current volume
+
+```javascript
+dapperCalc.adjustWater(1.088, 1.078, 5);
+// .64
+```
+
+**Formula:**
+*amount of water to add = (volume * specific gravity points / target gravity points) - volume*
+
+### dapperCalc.adjustExtract(sg, tg, water, extract)
+
+Calculates how much extract should be added to reach target gravity.  
+Returns value in pounds
+
+* sg: specific gravity
+* tg: target gravity
+* volume: current volume
+* extract: "DME" if using Dried Malt Extract. "LME" if using Liquid Malt Extract. Also accepts custom gravity point value.
+
+```javascript
+dapperCalc.adjustExtract(1.078, 1.088, 5, "LME");
+// 1.39
+dapperCalc.adjustExtract(1.078, 1.088, 5, "DME");
+// 1.14
+dapperCalc.adjustExtract(1.078, 1.088, 5, 46);
+// 1.14
+```
+
+**Formula:**
+*amount of extract to add = (target gravity points - specific gravity points) * volume / extract gravity points*

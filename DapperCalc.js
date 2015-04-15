@@ -32,7 +32,7 @@ var dapperCalc = (function () {
   // sgravity = number | specific gravity
   var sg2plato = function(sgravity) {
     if (dapperHelp.isNum(sgravity)) {
-      calc = (-616.868) + (1111.14 * sgravity) - (630.272 * Math.pow(sgravity, 2)) + (135.997 * Math.pow(sgravity, 3));
+      var calc = (-616.868) + (1111.14 * sgravity) - (630.272 * Math.pow(sgravity, 2)) + (135.997 * Math.pow(sgravity, 3));
       return Math.round(calc * 10) / 10;
     }
     else {
@@ -45,7 +45,7 @@ var dapperCalc = (function () {
   // plato = number | plato or brix
   var plato2sg = function(plato) {
     if (dapperHelp.isNum(plato)) {
-      calc = ( plato / ( 258.6 - ( ( plato / 258.2 ) * 227.1 ) ) + 1);
+      var calc = ( plato / ( 258.6 - ( ( plato / 258.2 ) * 227.1 ) ) + 1);
       return Math.round(calc * 1000) / 1000;
     }
     else {
@@ -87,7 +87,7 @@ var dapperCalc = (function () {
   // http://hbd.org/ensmingr/
   var aAttenuation = function(og, fg) {
     if (dapperHelp.isNum(og, fg)) {
-      calc = 100 * (1 - (dapperCalc.sg2plato(fg)/dapperCalc.sg2plato(og)));
+      var calc = 100 * (1 - (dapperCalc.sg2plato(fg)/dapperCalc.sg2plato(og)));
       return Math.round(calc * 10) / 10;
     }
     else {
@@ -101,7 +101,7 @@ var dapperCalc = (function () {
   // http://hbd.org/ensmingr/
   var rAttenuation = function(og, fg) {
     if (dapperHelp.isNum(og, fg)) {
-      calc = 100 * (1 - (dapperCalc.realExtract(og,fg) / dapperCalc.sg2plato(og)));
+      var calc = 100 * (1 - (dapperCalc.realExtract(og,fg) / dapperCalc.sg2plato(og)));
       return Math.round(calc * 10) / 10;
     }
     else {
@@ -149,7 +149,7 @@ var dapperCalc = (function () {
     if (dapperHelp.isNum(weight,aa,time,gravity,volume)) {
   		calc = (aau(weight, aa) * utilization(time, gravity) * 74.89) / volume;
   		// multiply by 1.1 to account for pellet vs whole hop
-  		calc = calc * 1.1;
+  		var calc = calc * 1.1;
   		return Math.round(calc * 10) / 10;
   	}
   	else {
@@ -186,11 +186,63 @@ var dapperCalc = (function () {
         return null;
       }
     }
-    calc = 1.4922 * (Math.pow(totalMcu, 0.6859));
+    var calc = 1.4922 * (Math.pow(totalMcu, 0.6859));
     return Math.round(calc * 10) / 10;
   };
 
+  // Specific Gravity to Gravity Points
+  // sg = number | Specific Gravity
+  var sg2gp = function(sg) {
+    if (dapperHelp.isNum(sg)) {
+      var calc = (sg - 1) * 1000;
+      return Math.round(calc);
+    }
+    else {
+      return null;
+    }
+  };
 
+  // Adjust with Water
+  // Estimate how much water is needed reach target gravity
+  // sg = number | specific/current gravity
+  // tg = number | target gravity
+  // volume = current volume (in gallons)
+  var adjustWater = function(sg, tg, volume) {
+    if (sg >= tg && dapperHelp.isNum(sg, tg, volume)) {
+      var calc = ((volume * sg2gp(sg)) / sg2gp(tg)) - volume;
+      return Math.round(calc * 100) / 100;
+    }
+    else {
+      return null;
+    }
+  };
+
+  // Adjust with extract
+  // Estimate how much extract is needed to reach target gravity
+  // Returns lb needed
+  // sg = number | specific/current gravity
+  // tg = number | target gravity
+  // volume = number | current volume (in gallons)
+  // extract = string or number | "LME", "DME", or custom Gravity Point value
+  var adjustExtract = function(sg, tg, volume, extract) {
+    if (sg <= tg && dapperHelp.isNum(sg, tg, volume)) {
+      var extractType;
+      if (extract === "LME") {
+        extractType = 36;
+      }
+      else if (extract === "DME") {
+        extractType = 44;
+      }
+      else if (dapperHelp.isNum(extract)) {
+        extractType = extract;
+      }
+      var calc = (dapperCalc.sg2gp(tg) - dapperCalc.sg2gp(sg)) * volume / extractType;
+      return Math.round(calc * 100) / 100;
+    }
+    else {
+      return null;
+    }
+  }
 
   var test = function() {
   };
@@ -210,6 +262,9 @@ var dapperCalc = (function () {
     ibu: ibu,
     mcu: mcu,
     srm: srm,
+    sg2gp: sg2gp,
+    adjustWater: adjustWater,
+    adjustExtract: adjustExtract,
     test: test
   };
 
