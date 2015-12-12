@@ -12,6 +12,8 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 - [x] ibu
 - [x] mcu
 - [x] srm
+- [x] sg2gp
+- [x] gp2sg
 - [x] real extract
 - [x] calories
 - [x] apparent attenuation
@@ -20,8 +22,13 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 - [x] specific gravity to gravity pnits
 - [X] water addition
 - [X] malt addition
+- [X] shrinkage
+- [X] evapPerHour
+- [X] totalBoilLoss
+- [X] postBoilVolume
+- [X] postBoilGravity
 - [ ] weight to volume
-- [ ] boil off
+- [x] shrinkage
 - [ ] refractometer reading adjustment
 - [ ] hydromteter temp adjust
 - [ ] yeast starter
@@ -246,7 +253,21 @@ dapperCalc.sg2gp(1.088);
 ```
 
 **Formula:**  
-*gravity points = (sg - 1) * 1000*
+*gravity points = (sg - 1) x 1000*
+
+### dapperCalc.gp2sg(sg)
+
+Converts gravity points (ex: 88) to specific gravity measurement (ex: 1.088)
+
+* sg: specific gravity
+
+```javascript
+dapperCalc.gp2sg(88);
+// 1.088
+```
+
+**Formula:**  
+*specific gravity = (gravity points / 1000) + 1*
 
 ### dapperCalc.adjustWater(sg, tg, water)
 
@@ -262,8 +283,8 @@ dapperCalc.adjustWater(1.088, 1.078, 5);
 // .64
 ```
 
-**Formula:**
-*amount of water to add = (volume * specific gravity points / target gravity points) - volume*
+**Formula:**  
+*amount of water to add = (volume x specific gravity points / target gravity points) - volume*
 
 ### dapperCalc.adjustExtract(sg, tg, water, extract)
 
@@ -284,5 +305,41 @@ dapperCalc.adjustExtract(1.078, 1.088, 5, 46);
 // 1.14
 ```
 
+**Formula:**  
+*amount of extract to add = (target gravity points - specific gravity points) x volume / extract gravity points*
+
+##dapperCalc.shrinkage(percentage, volume)
+
+Calculates how much volume (in gallons) is lost after wort cools.
+
+* percentage: Percentage that total volume shrinks
+* volume: volume of hot wort after boil
+
+```javascript
+dapperCalc.shrinkage(4, 6);
+// 0.24
+```
+
 **Formula:**
-*amount of extract to add = (target gravity points - specific gravity points) * volume / extract gravity points*
+*shrinkage = volume x (percentage/100)*
+
+##dapperCalc.evapPerHour(volume, rate, measurement)
+
+Calculates how much volume (in gallons) is lost per hour to evaporation
+
+* volume: pre-boil volume
+* rate: percentage or volume lost per hour
+* "percPerHour" for percentage/hour. "volPerHour" for volume/hour
+
+```javascript
+dapperCalc.evapPerHour(6, 10, 'percPerHour');
+// 0.60
+dapperCalc.evapPerHour(6, .5, 'volPerHour');
+
+```
+
+##dapperCalc.totalBoilLoss(evapPerHour, boilTime)
+
+##dapperCalc.postBoilVolume(startVol, boilLoss, shrinkLoss)
+
+##dapperCalc.postBoilGravity(startVol, sg, finalVol)
