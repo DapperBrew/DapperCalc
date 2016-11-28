@@ -1,5 +1,4 @@
-/* jshint strict: true */
-/* global isNum */
+/* eslint-disable */
 
 var dapperCalc = (function () {
   "use strict";
@@ -249,7 +248,7 @@ var dapperCalc = (function () {
     return null;
   };
 
-  // Returns how much total volume (gallons) is lost during the boil to evaporation 
+  // Returns how much total volume (gallons) is lost during the boil to evaporation
   // evapPerHour = number | how much volume is lost per hour to evaporation. Can use evapLoss()
   // boilTime = number | total length of boil
   var totalBoilLoss = function (evapPerHour, boilTime) {

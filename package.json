@@ -1,0 +1,25 @@
+{
+  "name": "dapper-calc",
+  "version": "1.0.0",
+  "description": "Calculations for Dapper",
+  "main": "DapperCalc.js",
+  "scripts": {
+    "test": "mocha --compilers js:babel-core/register ./test/test.js",
+    "docs": "jsdoc2md --template README.hbs --files index.js > README.md"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.18.2",
+    "babel-preset-latest": "^6.16.0",
+    "chai": "^3.5.0",
+    "eslint": "^3.11.0",
+    "eslint-config-airbnb-base": "^10.0.1",
+    "eslint-plugin-import": "^2.2.0",
+    "jsdoc-to-markdown": "^2.0.1",
+    "mocha": "^3.2.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.2"
+  }
+}

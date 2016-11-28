@@ -1,6 +1,6 @@
 # DapperCalc
 
-DapperCalc contains various calculations that power DapperBrew. This work is ongoing. Calculations may be incomplete, or incorrect. 
+DapperCalc contains various calculations that power DapperBrew. This work is ongoing. Calculations may be incomplete, or incorrect.
 
 ### TODO
 - [x] abv
@@ -33,313 +33,257 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 - [ ] hydromteter temp adjust
 - [ ] yeast starter
 
+## Modules
 
+<dl>
+<dt><a href="#module_abv">abv</a> ⇒ <code>number</code></dt>
+<dd><p>Calculates the alcohol by volume (abv) <br></p>
+</dd>
+<dt><a href="#module_abw">abw</a> ⇒ <code>number</code></dt>
+<dd><p>Calculates the Alcohol by weight (ABW)</p>
+</dd>
+<dt><a href="#module_sg2plato">sg2plato</a> ⇒ <code>number</code></dt>
+<dd><p>Convert specific gravity (sg) to plato</p>
+</dd>
+<dt><a href="#module_plato2sg">plato2sg</a> ⇒ <code>number</code></dt>
+<dd><p>Convert plato to specific gravity (sg)</p>
+</dd>
+<dt><a href="#module_realExtract">realExtract</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate real extract from starting gravity &amp; final gravity.</p>
+</dd>
+<dt><a href="#module_caloriesAlcohol">caloriesAlcohol</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate number of calories from Alcohol in 12oz serving.</p>
+</dd>
+<dt><a href="#module_caloriesCarbs">caloriesCarbs</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate number of calories from carbs in 12oz serving.</p>
+</dd>
+<dt><a href="#module_caloriesTotal">caloriesTotal</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate number of calories in 12oz serving.</p>
+</dd>
+<dt><a href="#module_aAttenuation">aAttenuation</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate the apparent attenuation</p>
+</dd>
+<dt><a href="#module_rAttenuation">rAttenuation</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate the real attenuation</p>
+</dd>
+<dt><a href="#module_aau">aau</a> ⇒ <code>number</code></dt>
+<dd><p>Alpha Acid Units</p>
+</dd>
+<dt><a href="#module_utilization">utilization</a> ⇒ <code>number</code></dt>
+<dd><p>Hop Utilization (Tinseth)</p>
+</dd>
+</dl>
 
-## Methods
+<a name="module_abv"></a>
 
-### dapperCalc.abv(og, fg)
+## abv ⇒ <code>number</code>
+Calculates the alcohol by volume (abv) <br>
 
-Calculates the alcohol by volume (abv) from the original gravity of the wort (og) and final gravity of the beer (fg)
+**Returns**: <code>number</code> - (((1.05 x (og - fg)) / fg) / 0.79) x 100;  
 
-* og: original gravity of wort
-* fg: final gravity of breer
+| Param | Type | Description |
+| --- | --- | --- |
+| og | <code>number</code> | original gravity (og) |
+| fg | <code>number</code> | final gravity (fg) |
 
-```javascript
-dapperCalc.abv(1.088, 1.013);
-// 9.84
+**Example**  
+```js
+// returns 9.84
+abv(1.088, 1.013);
 ```
+<a name="module_abw"></a>
 
-**Forumla:**  
-*abv = (((1.05 x (og - fg)) / fg) / 0.79) x 100*;
+## abw ⇒ <code>number</code>
+Calculates the Alcohol by weight (ABW)
 
-### dapperCalc.abw(og, fg)
+**Returns**: <code>number</code> - (abv x 0.79336) / fg  
 
-Calculates the alcohol by weight (abw) from the original gravity of the wort (og) and final gravity of the beer (fg)
+| Param | Type | Description |
+| --- | --- | --- |
+| og | <code>number</code> | The original gravity (og) |
+| fg | <code>number</code> | The final gravity (nfg) |
 
-* og: original gravity of wort
-* fg: final gravity of breer
-
-```javascript
-dapperCalc.abw(1.088, 1.013);
-// 7.71
+**Example**  
+```js
+// returns 7.71
+abw(1.088, 1.013);
 ```
-**Forumla:**  
-*abw = (abv x 0.79336) / fg*
+<a name="module_sg2plato"></a>
 
-### dapperCalc.sg2plato(sgravity)
+## sg2plato ⇒ <code>number</code>
+Convert specific gravity (sg) to plato
 
-Converts specific gravity (sg) to plato. Can also be used for sg to brix.
+**Returns**: <code>number</code> - (-616.868) + (1111.14 x sgravity) - (630.272 x sgravity^2) + (135.997 x sgravity^3)  
 
-* sgravity: specific gravity of wort/beer
+| Param | Type | Description |
+| --- | --- | --- |
+| sg | <code>number</code> | the specific gravity (sg) |
 
-```javascript
-dapperCalc.sg2plato(1.088);
-// 21.1
+**Example**  
+```js
+// returns 21.1
+sg2plato(1.088);
 ```
+<a name="module_plato2sg"></a>
 
-**Forumla:**  
-*plato = (-616.868) + (1111.14 x sgravity) - (630.272 x sgravity^2) + (135.997 x sgravity^3)*
+## plato2sg ⇒ <code>number</code>
+Convert plato to specific gravity (sg)
 
-### dapperCalc.plato2sg(plato)
+**Returns**: <code>number</code> - plato / (258.6 -((plato / 258.2) x 227.1)) + 1  
 
-Converts plato to specific gravity. Can also be used for brix to sg.
+| Param | Type | Description |
+| --- | --- | --- |
+| plato | <code>number</code> | plato number to be converted |
 
-* plato: density of beer in plato (can also be brix)
-
-```javascript
-dapperCalc.plato2sg(18);
-// 1.074
+**Example**  
+```js
+// returns 1.074
+plato2sg(18);
 ```
+<a name="module_realExtract"></a>
 
-**Formula:**  
-*sg = plato / (258.6 -((plato / 258.2) x 227.1)) + 1*
+## realExtract ⇒ <code>number</code>
+Calculate real extract from starting gravity & final gravity.
 
-### dapperCalc.realExtract(og, fg)
+**Returns**: <code>number</code> - (0.1808 × °Pi) + (0.8192 × °Pf)  
+**See**: [hbd.org/ensmingr](http://hbd.org/ensmingr/)  
 
-Calculates the real extract (measure of the sugars which are fermented).  
-See: http://hbd.org/ensmingr/
+| Param | Type | Description |
+| --- | --- | --- |
+| og | <code>number</code> | original gravity (og) |
+| fg | <code>number</code> | final gravity (fg) |
 
-* og: original gravity
-* fg: final gravity
-
-```javascript
-dapperCalc.realExtract(1.088, 1.012);
-// 6.3544
+**Example**  
+```js
+// returns 6.3544
+realExtract(1.088, 1.012);
 ```
+<a name="module_caloriesAlcohol"></a>
 
-**Formula:**  
-*realExtract = (0.1808 × °Pi) + (0.8192 × °Pf)*
+## caloriesAlcohol ⇒ <code>number</code>
+Calculate number of calories from Alcohol in 12oz serving.
 
-### dapperCalc.calories(og, fg)
+**Returns**: <code>number</code> - 1881.22 * fg * ((og - fg) / (1.775 - og))  
+**See**: [www.homebrewersassociation.org](https://www.homebrewersassociation.org/how-to-brew/how-many-calories-are-in-beer/)  
 
-Calculates number of calories in 12oz.  
-see: http://hbd.org/ensmingr/
+| Param | Type | Description |
+| --- | --- | --- |
+| og | <code>number</code> | original gravity (og) |
+| fg | <code>number</code> | final gravity (fg) |
 
-* og: original gravity
-* fg: final gravity
-
-```javascript
-dapperCalc.calories(1.088, 1.012);
-// 283.7
+**Example**  
+```js
+// returns 210.61
+caloriesAlcohol(1.088, 1.012);
 ```
+<a name="module_caloriesCarbs"></a>
 
-**Formula:**  
-*calories = (6.9 x abw + 4.0 x (realExtract - .1)) x fg x 3.55*
+## caloriesCarbs ⇒ <code>number</code>
+Calculate number of calories from carbs in 12oz serving.
 
-### dapperCalc.aAttenuation(og, fg)
+**Returns**: <code>number</code> - 3550.0 * fg * ((0.1808 * og) + ((0.8192 * fg) - 1.0004))  
+**See**: [www.homebrewersassociation.org](https://www.homebrewersassociation.org/how-to-brew/how-many-calories-are-in-beer/)  
 
-Calculates percentage of sugars converted into alcohol and carbon dioxide using apparent extract reading.
-see: http://hbd.org/ensmingr/
+| Param | Type | Description |
+| --- | --- | --- |
+| og | <code>number</code> | original gravity (og) |
+| fg | <code>number</code> | final gravity (fg) |
 
-* og: original gravity
-* fg: final gravity
-
-```javascript
-dapperCalc.aAttenuation(1.088, 1.012);
-// 85.3
+**Example**  
+```js
+// returns 91.04
+caloriesCarbs(1.088, 1.012);
 ```
+<a name="module_caloriesTotal"></a>
 
-**Formula:**  
-*apparent attenuation = 100 x (1 - (°Pf / °Pi))*
+## caloriesTotal ⇒ <code>number</code>
+Calculate number of calories in 12oz serving.
 
-### dapperCalc.rAttenuation(og, fg)
+**Returns**: <code>number</code> - calories from alcohol + calories from carbs  
+**See**: [www.homebrewersassociation.org](https://www.homebrewersassociation.org/how-to-brew/how-many-calories-are-in-beer/)  
 
-Calculates percentage of sugars converted into alcohol and carbon dioxide using real extract reading.
-see: http://hbd.org/ensmingr/
+| Param | Type | Description |
+| --- | --- | --- |
+| og | <code>number</code> | original gravity (og) |
+| fg | <code>number</code> | final gravity (fg) |
 
-* og: original gravity
-* fg: final gravity
-
-```javascript
-dapperCalc.rAttenuation(1.088, 1.012);
-// 69.9
+**Example**  
+```js
+// returns 301.65
+caloriesTotal(1.088, 1.012);
 ```
+<a name="module_aAttenuation"></a>
 
-**Formula:**  
-*apparent attenuation = 100 x (1 - (real extract / °Pi)*
+## aAttenuation ⇒ <code>number</code>
+Calculate the apparent attenuation
 
-### dapperCalc.aau(weight, aa)
+**Returns**: <code>number</code> - 100 x (1 - (°Pf / °Pi))  
+**See**: [hbd.org/ensmingr](http://hbd.org/ensmingr/)  
 
-Returns the Alpha Acid Unit (aau) for hops
+| Param | Type | Description |
+| --- | --- | --- |
+| og | <code>number</code> | original gravity (og) |
+| fg | <code>number</code> | final gravity (fg) |
 
-* weight: ounces of hops
-* aa: Alpha Acids Percentage
-
-```javascript
-dapperCalc.aau(1.5, 12);
-// 18
+**Example**  
+```js
+// return 85.3
+aAttenuation(1.088, 1.012);
 ```
+<a name="module_rAttenuation"></a>
 
-**Forumla:**  
-*aau = weight x Alpha Acid Percentage*
+## rAttenuation ⇒ <code>number</code>
+Calculate the real attenuation
 
-### dapperCalc.utilization(time, gravity)
+**Returns**: <code>number</code> - 100 x (1 - (real extract / °Pi)  
+**See**: [hbd.org/ensmingr](http://hbd.org/ensmingr/)  
 
-Calculates hop utilization based on the time left in boil, and gravity of wort. Primarily used in IBU calculations. Uses Tinseth calculations.
+| Param | Type | Description |
+| --- | --- | --- |
+| og | <code>number</code> | original gravity (og) |
+| fg | <code>number</code> | final gravity (fg) |
 
-* time: time left in boil
-* gravity: gravity of wort when adding hops
-
-```javascript
-dapperCalc.utilization(60, 1.048);
-// 0.2348476097710606
+**Example**  
+```js
+// return 69.9
+rAttenuation(1.088, 1.012);
 ```
+<a name="module_aau"></a>
 
-**Forumla:**  
-*bigness factor = 1.65 x 0.000125^(wort gravity - 1)*  
-*boil time Factor = ( 1 - e^(-0.04 x time in mins) ) / 4.15*  
-*utilization = bigness factor x boil time factor*
+## aau ⇒ <code>number</code>
+Alpha Acid Units
 
-### dapperCalc.ibu(weight, aa, time, gravity, volume)
+**Returns**: <code>number</code> - weight x Alpha Acid Percentage  
+**Todo**
 
-Calculates the International Bittering Units (IBU) for a single hop addition. This uses Tinseth calculations. Currently assumes pellets are used.
+- [ ] Add imperial unit option (grams)
 
-* weight: weight of hops (oz)
-* aa: alpha acids percentage of hop used
-* time: time left in boil
-* gravity: gravity of wort when adding hops
-* volume: post boil volume
 
-```javascript
-dapperCalc.ibu(1.5, 12, 60, 1.048, 5.5);
-// 63.3
+| Param | Type | Description |
+| --- | --- | --- |
+| weight | <code>number</code> | weight of hops (in oz) |
+| aa | <code>number</code> | Alpha Acidic percentage |
+
+**Example**  
+```js
+// returns 18
+aau(1.5, 12);
 ```
+<a name="module_utilization"></a>
 
-**Forumla:**  
-*ibu = (aau x utilization x 74.89) / volume*  
-*adjust for pellets hops = ibu x 1.1*
+## utilization ⇒ <code>number</code>
+Hop Utilization (Tinseth)
 
-### dapperCalc.mcu(weight, lovibond, volume)
+**Returns**: <code>number</code> - utilization = bigness factor x boil time factor  
+**See**: [realbeer.com](http://realbeer.com/hops/research.html)  
 
-Calculates Malt Color Unit (MCU) for a grain addition
+| Param | Type | Description |
+| --- | --- | --- |
+| time | <code>number</code> | time left in boil (minutes) |
+| gravity | <code>number</code> | Specific gravity (sg) |
 
-* weight: weight of grain (lb)
-* lovibond: Degrees Lovibond for grain
-* volume: volume of batch. Should be post-boil volume after cooling
-
-```javascript
-dapperCalc.mcu(9, 3.5, 5.5);
-// 5.72
+**Example**  
+```js
+// returns 0.2348476097710606
+utilization(60, 1.048);
 ```
-
-**Formula:**  
-*mcu =  (weight x lovibond) / volume*
-
-### dapperCalc.srm(mcu1, mcu2, ...)
-
-Calculates color of the beer using Standard Reference Method (Morey equation). Can accept an infite # of arguments.
-
-* mcu1: MCU for a grain addition. Number can be calculated using dapperCalc(mcu)
-
-```javascript
-dapperCalc.srm(5.72);
-// 4.9
-dapperCalc.srm(5.72, 2.54);
-// 6.4
-```
-
-**Formula:**
-*srm = 1.4922 x (MCU x 0.6859)*
-
-### dapperCalc.sg2gp(sg)
-
-Converts specific gravity measurement (ex: 1.088) to gravity points (ex: 88)
-
-* sg: specific gravity
-
-```javascript
-dapperCalc.sg2gp(1.088);
-// 88
-```
-
-**Formula:**  
-*gravity points = (sg - 1) x 1000*
-
-### dapperCalc.gp2sg(sg)
-
-Converts gravity points (ex: 88) to specific gravity measurement (ex: 1.088)
-
-* sg: specific gravity
-
-```javascript
-dapperCalc.gp2sg(88);
-// 1.088
-```
-
-**Formula:**  
-*specific gravity = (gravity points / 1000) + 1*
-
-### dapperCalc.adjustWater(sg, tg, water)
-
-Calculates how much water should be added to reach target gravity.  
-Returns value in pounds
-
-* sg: specific gravity
-* tg: target gravity
-* volume: current volume
-
-```javascript
-dapperCalc.adjustWater(1.088, 1.078, 5);
-// .64
-```
-
-**Formula:**  
-*amount of water to add = (volume x specific gravity points / target gravity points) - volume*
-
-### dapperCalc.adjustExtract(sg, tg, water, extract)
-
-Calculates how much extract should be added to reach target gravity.  
-Returns value in pounds
-
-* sg: specific gravity
-* tg: target gravity
-* volume: current volume
-* extract: "DME" if using Dried Malt Extract. "LME" if using Liquid Malt Extract. Also accepts custom gravity point value.
-
-```javascript
-dapperCalc.adjustExtract(1.078, 1.088, 5, "LME");
-// 1.39
-dapperCalc.adjustExtract(1.078, 1.088, 5, "DME");
-// 1.14
-dapperCalc.adjustExtract(1.078, 1.088, 5, 46);
-// 1.14
-```
-
-**Formula:**  
-*amount of extract to add = (target gravity points - specific gravity points) x volume / extract gravity points*
-
-##dapperCalc.shrinkage(percentage, volume)
-
-Calculates how much volume (in gallons) is lost after wort cools.
-
-* percentage: Percentage that total volume shrinks
-* volume: volume of hot wort after boil
-
-```javascript
-dapperCalc.shrinkage(4, 6);
-// 0.24
-```
-
-**Formula:**
-*shrinkage = volume x (percentage/100)*
-
-##dapperCalc.evapPerHour(volume, rate, measurement)
-
-Calculates how much volume (in gallons) is lost per hour to evaporation
-
-* volume: pre-boil volume
-* rate: percentage or volume lost per hour
-* "percPerHour" for percentage/hour. "volPerHour" for volume/hour
-
-```javascript
-dapperCalc.evapPerHour(6, 10, 'percPerHour');
-// 0.60
-dapperCalc.evapPerHour(6, .5, 'volPerHour');
-
-```
-
-##dapperCalc.totalBoilLoss(evapPerHour, boilTime)
-
-##dapperCalc.postBoilVolume(startVol, boilLoss, shrinkLoss)
-
-##dapperCalc.postBoilGravity(startVol, sg, finalVol)
