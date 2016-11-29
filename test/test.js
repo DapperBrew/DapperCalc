@@ -149,3 +149,123 @@ describe('utilization', () => {
     assert.equal(calc.utilization(60, 1.048), 0.2348476097710606);
   });
 });
+
+// IBU Calcuation Test
+describe('ibu', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.ibu(1.5, 12, 'meh', 1.048, 5.5); }, Error);
+  });
+
+  it('should return correct hop ibu', () => {
+    assert.equal(calc.ibu(1.5, 12, 60, 1.048, 5.5), 63.3);
+  });
+});
+
+// MCU Calcuation Test
+describe('mcu', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.mcu(9, 'meh', 5.5); }, Error);
+  });
+
+  it('should return correct malt color unit', () => {
+    assert.equal(calc.mcu(9, 3.5, 5.5), 5.727);
+  });
+});
+
+// SRM Calcuation Test
+describe('srm', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.srm(5.72, 'meh'); }, Error);
+  });
+
+  it('should return correct SRM', () => {
+    assert.equal(calc.srm(5.72), 4.9);
+    assert.equal(calc.srm(5.72, 2.54), 6.4);
+  });
+});
+
+// SG to GP Calcuation Test
+describe('sg2gp', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.sg2gp('meh'); }, Error);
+  });
+
+  it('should return correct gravity points', () => {
+    assert.equal(calc.sg2gp(1.088), 88);
+  });
+});
+
+// GP to SP Calcuation Test
+describe('gp2sg', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.gp2sg('meh'); }, Error);
+  });
+
+  it('should return correct specific gravity', () => {
+    assert.equal(calc.gp2sg(88), 1.088);
+  });
+});
+
+// Water needed Calcuation Test
+describe('adjustWater', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.adjustWater(1.088, 'meh', 5); }, Error);
+  });
+
+  it('should return correct amount of water needed', () => {
+    assert.equal(calc.adjustWater(1.088, 1.078, 5), 0.64);
+  });
+});
+
+// extract needed Calcuation Test
+describe('adjustExtract', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.adjustExtract(1.078, 'meh', 5, 'LME'); }, Error);
+  });
+
+  it('should return correct amount of extract needed if LME chosen', () => {
+    assert.equal(calc.adjustExtract(1.078, 1.088, 5, 'LME'), 1.39);
+  });
+
+  it('should return correct amount of extract needed if DME chosen', () => {
+    assert.equal(calc.adjustExtract(1.078, 1.088, 5, 'DME'), 1.14);
+  });
+
+  it('should return correct amount of extract needed if custom gravity points used', () => {
+    assert.equal(calc.adjustExtract(1.078, 1.088, 5, 46), 1.09);
+  });
+});
+
+// Shrinkage Calcuation Test
+describe('shrinkage', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.shrinkage(5, 'meh'); }, Error);
+  });
+
+  it('should return correct amount of shrinkage (default value)', () => {
+    assert.equal(calc.shrinkage(6), 0.24);
+  });
+
+  it('should return correct amount of shrinkage (custom value)', () => {
+    assert.equal(calc.shrinkage(6, 3), 0.18);
+  });
+});
+
+// Loss per hour by evaperation Calcuation Test
+describe('evapPerHour', () => {
+  it('only allow numbers for volume & rate', () => {
+    assert.throw(() => { calc.evapPerHour(5, 'meh', 'volume'); }, Error);
+  });
+
+  it('should return correct amount lost per hour (default value)', () => {
+    assert.equal(calc.evapPerHour(6, 10), 0.60);
+  });
+
+  it('should return correct amount lost per hour (percentage)', () => {
+    assert.equal(calc.evapPerHour(6, 10, 'percentage'), 0.60);
+  });
+
+  it('should return correct amount lost per hour (volume)', () => {
+    assert.equal(calc.evapPerHour(6, 0.5, 'volume'), 0.50);
+  });
+});

@@ -308,3 +308,280 @@ export const utilization = (time, gravity) => {
   // if its not a number, throw an error
   throw new Error('arguments must be a number');
 };
+
+
+/**
+ * Calculate IBU for hop addition (Tinseth / pellets)
+ * @module ibu
+ * @param  {number} weight  Weight of hops (oz)
+ * @param  {number} aa      Alpha acids percentage of hops
+ * @param  {number} time   time left in boil (minutes)
+ * @param  {number} gravity Specific Gravity of wort when adding hops
+ * @param  {number} volume  post boil volume (gallons)
+ * @see {@link http://howtobrew.com/book/section-1/hops/hop-bittering-calculations|howtobrew.com/}
+ * @todo allow for grams for hops
+ * @todo allow for liter for volume
+ * @todo allow for rager scale
+ * @todo allow for whole hops
+ * @return {number}         (aau x utilization x 74.89) / volume
+ *
+ * @example
+ * // returns 63.3
+ * ibu(1.5, 12, 60, 1.048, 5.5);
+ */
+
+export const ibu = (weight, aa, time, gravity, volume) => {
+  if (isNum(weight, aa, time, gravity, volume)) {
+    let calc = (aau(weight, aa) * utilization(time, gravity) * 74.89) / volume;
+
+    // multiply by 1.1 to account for pellet vs whole hop
+    calc *= 1.1;
+    const calcRound = round(calc, 1);
+    return calcRound;
+  }
+
+  // if its not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+
+/**
+ * Calculate Malt Color Units
+ * @module mcu
+ * @param  {number} weight   weight of grain/fermentable (in lb)
+ * @param  {number} lovibond color of grains in lovibond
+ * @param  {number} volume   batch size (in gallons) including deadspace/trub loss
+ * @todo support kg for weight
+ * @todo support liter for volume
+ * @return {number}          (weight * lovibond) / volume
+ *
+ * @example
+ * // return 5.727
+ * mcu(9, 3.5, 5.5);
+ */
+
+export const mcu = (weight, lovibond, volume) => {
+  if (isNum(weight, lovibond, volume)) {
+    const calc = (weight * lovibond) / volume;
+    const calcRound = round(calc, 3);
+    return calcRound;
+  }
+
+  // if its not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+
+/**
+ * Calculates color (SRM) of eer using standard reference method (Morey equation)
+ * @module srm.
+ * @param  {...number} mcuNum MCU units to covert to SRM. Accepts infinite # of arguments.
+ * @return {number}      1.4922 x (MCU x 0.6859)
+ *
+ * @example
+ * // returns 4.9
+ * srm(5.72);
+ *
+ * // returns 6.4
+ * srm(5.72, 2.54);
+ */
+
+export const srm = (...mcuNum) => {
+  let totalMcu = 0;
+  for (let i = 0; i < mcuNum.length; i += 1) {
+    if (isNum(mcuNum[i])) {
+      totalMcu += mcuNum[i];
+    } else {
+      // if its not a number, throw an error
+      throw new Error('arguments must be a number');
+    }
+  }
+  const calc = 1.4922 * (totalMcu ** 0.6859);
+  const calcRound = round(calc, 1);
+  return calcRound;
+};
+
+
+/**
+ * Convert specific gravity (sg) to gravity points.
+ * @module sg2gp
+ * @param  {number} sg The specific gravity (sg)
+ * @return {number}    (sg - 1) x 1000
+ *
+ * @example
+ * // return 88
+ * sg2gp(1.088);
+ */
+
+export const sg2gp = (sg) => {
+  if (isNum(sg)) {
+    const calc = (sg - 1) * 1000;
+    const calcRound = round(calc);
+    return calcRound;
+  }
+  // if its not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+
+/**
+ * Convert gravity points to specific gravity (sg)
+ * @module gp2sg
+ * @param  {number} gp Gravitiy points
+ * @return {number}    (gravity points / 1000) + 1
+ *
+ * @example
+ * // return 1.088
+ * gp2sg(88);
+ */
+
+export const gp2sg = (gp) => {
+  if (isNum(gp)) {
+    const calc = (gp / 1000) + 1;
+    return calc;
+  }
+  // if its not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+
+/**
+ * Calculate water needed to reach target gravity.
+ * @module adjustWater
+ * @param  {number} sg     Current/Specific gravity (sg)
+ * @param  {number} tg     Target gravity
+ * @param  {number} volume current volume (gallons)
+ * @todo support litres for input volume
+ * @todo support litres for return
+ * @return {number}        (volume x sg / target gravity points) - volume
+ *
+ * @example
+ * // return .64
+ * adjustWater(1.088, 1.078, 5);
+ */
+
+export const adjustWater = (sg, tg, volume) => {
+  if (!isNum(sg, tg, volume)) {
+    // if arguments are not a number, throw an error
+    throw new Error('arguments must be a number');
+  } else if (sg < tg) {
+    // if target gravity number is not less than specific gravity.
+    throw new Error('target gravity must be less than specific gravity');
+  } else {
+    const calc = ((volume * sg2gp(sg)) / sg2gp(tg)) - volume;
+    const calcRound = round(calc, 2);
+    return calcRound;
+  }
+};
+
+
+/**
+ * Calculate how much extract (in lb) is needed to reach target gravity.
+ * @module adjustExtract
+ * @param  {number} sg      Current / specific gravity (sg)
+ * @param  {number} tg      target gravity
+ * @param  {number} volume  volume (gallons)
+ * @param  {(string|number)} extract 'DME', 'LME', or custom gravity point value.
+ * @todo support litres for input volume.
+ * @todo support kilograms for output volume
+ * @return {number}        lb = (target gravity - sg) x volume / extract gravity points
+ *
+ * @example
+ * // return 1.39
+ * adjustExtract(1.078, 1.088, 5, 'LME');
+ *
+ * // return 1.14
+ * adjustExtract(1.078, 1.088, 5, 'DME');
+ *
+ * // return 1.14
+ * adjustExtract(1.078, 1.088, 5, 46);
+ */
+
+export const adjustExtract = (sg, tg, volume, extract) => {
+  if (sg > tg) {
+    throw new Error('target travity must be greater than specific gravity');
+  } else if (!isNum(sg, tg, volume)) {
+    // if arguments are not a number, throw an error
+    throw new Error('arguments must be a number');
+  } else {
+    let extractType = '';
+    if (extract === 'LME') {
+      extractType = 36;
+    } else if (extract === 'DME') {
+      extractType = 44;
+    } else if (isNum(extract)) {
+      extractType = extract;
+    } else {
+      throw new Error('invalid extract argument');
+    }
+    const calc = (sg2gp(tg) - sg2gp(sg)) * volume / extractType;
+    const calcRound = round(calc, 2);
+    return calcRound;
+  }
+};
+
+
+/**
+ * Volume lost after wort cools (in gallons)
+ * @module shrinkage
+ * @param  {number} volume     volume of hot wort post boil (gallons)
+ * @param  {number} [percentage = 4] percentage the wort shrinks due to cooling
+ * @todo support input volume in litres
+ * @todo support return volume in litres
+ * @return {number}            volume x (percentage/100)
+ *
+ * @example
+ * // return 0.24
+ * shrinkage(6);
+ *
+ * // return something
+ * shrinkage(5, 3);
+ */
+
+export const shrinkage = (volume, percentage = 4) => {
+  if (isNum(volume, percentage)) {
+    const calc = volume * (percentage / 100);
+    const calcRound = round(calc, 2);
+    return calcRound;
+  }
+  // if arguments are not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+
+/**
+ * Calculate how much volume (gallons) is lost per hour to evaperation
+ * @module evapPerHour
+ * @param  {number} volume                     pre-boil volume (gallons)
+ * @param  {number} rate                       percentage or voluem lost per hour
+ * @param  {string} [measurement=percentage] set rate lost per hour to either 'percentage' or 'volume'
+ * @todo option for input volume to be litres
+ * @todo option for output volume to be litres
+ * @return {number} volume x (percentage lost per hour / 100)
+ *
+ * @example
+ * // return 0.60
+ * evapPerHour(6, 10);
+ *
+ * // return 0.60
+ * evapPerHour(6, 10, 'percentage');
+ *
+ * // return 0.50
+ * evapPerHour(6, .5, 'volume');
+ */
+
+export const evapPerHour = (volume, rate, measurement = 'percentage') => {
+  if (isNum(volume, rate)) {
+    if (measurement === 'percentage') {
+      const calc = volume * (rate / 100);
+      const calcRound = round(calc, 2);
+      return calcRound;
+    } else if (measurement === 'volume') {
+      const calcRound = round(rate, 2);
+      return calcRound;
+    }
+    throw new Error('invalid measurement argument');
+  }
+  // if arguments are not a number, throw an error
+  throw new Error('arguments must be a number');
+};

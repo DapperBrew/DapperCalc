@@ -67,10 +67,37 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 <dd><p>Calculate the real attenuation</p>
 </dd>
 <dt><a href="#module_aau">aau</a> ⇒ <code>number</code></dt>
-<dd><p>Alpha Acid Units</p>
+<dd><p>Calculate Alpha Acid Units</p>
 </dd>
 <dt><a href="#module_utilization">utilization</a> ⇒ <code>number</code></dt>
 <dd><p>Hop Utilization (Tinseth)</p>
+</dd>
+<dt><a href="#module_ibu">ibu</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate IBU for hop addition (Tinseth / pellets)</p>
+</dd>
+<dt><a href="#module_mcu">mcu</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate Malt Color Units</p>
+</dd>
+<dt><a href="#module_srm.">srm.</a> ⇒ <code>number</code></dt>
+<dd><p>Calculates color (SRM) of eer using standard reference method (Morey equation)</p>
+</dd>
+<dt><a href="#module_sg2gp">sg2gp</a> ⇒ <code>number</code></dt>
+<dd><p>Convert specific gravity (sg) to gravity points.</p>
+</dd>
+<dt><a href="#module_gp2sg">gp2sg</a> ⇒ <code>number</code></dt>
+<dd><p>Convert gravity points to specific gravity (sg)</p>
+</dd>
+<dt><a href="#module_adjustWater">adjustWater</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate water needed to reach target gravity.</p>
+</dd>
+<dt><a href="#module_adjustExtract">adjustExtract</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate how much extract (in lb) is needed to reach target gravity.</p>
+</dd>
+<dt><a href="#module_shrinkage">shrinkage</a> ⇒ <code>number</code></dt>
+<dd><p>Volume lost after wort cools (in gallons)</p>
+</dd>
+<dt><a href="#module_evapPerHour">evapPerHour</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate how much volume (gallons) is lost per hour to evaperation</p>
 </dd>
 </dl>
 
@@ -251,7 +278,7 @@ rAttenuation(1.088, 1.012);
 <a name="module_aau"></a>
 
 ## aau ⇒ <code>number</code>
-Alpha Acid Units
+Calculate Alpha Acid Units
 
 **Returns**: <code>number</code> - weight x Alpha Acid Percentage  
 **Todo**
@@ -276,6 +303,10 @@ Hop Utilization (Tinseth)
 
 **Returns**: <code>number</code> - utilization = bigness factor x boil time factor  
 **See**: [realbeer.com](http://realbeer.com/hops/research.html)  
+**Todo**
+
+- [ ] Add rager scale option
+
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -286,4 +317,213 @@ Hop Utilization (Tinseth)
 ```js
 // returns 0.2348476097710606
 utilization(60, 1.048);
+```
+<a name="module_ibu"></a>
+
+## ibu ⇒ <code>number</code>
+Calculate IBU for hop addition (Tinseth / pellets)
+
+**Returns**: <code>number</code> - (aau x utilization x 74.89) / volume  
+**See**: [howtobrew.com/](http://howtobrew.com/book/section-1/hops/hop-bittering-calculations)  
+**Todo**
+
+- [ ] allow for grams for hops
+- [ ] allow for liter for volume
+- [ ] allow for rager scale
+- [ ] allow for whole hops
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| weight | <code>number</code> | Weight of hops (oz) |
+| aa | <code>number</code> | Alpha acids percentage of hops |
+| time | <code>number</code> | time left in boil (minutes) |
+| gravity | <code>number</code> | Specific Gravity of wort when adding hops |
+| volume | <code>number</code> | post boil volume (gallons) |
+
+**Example**  
+```js
+// returns 63.3
+ibu(1.5, 12, 60, 1.048, 5.5);
+```
+<a name="module_mcu"></a>
+
+## mcu ⇒ <code>number</code>
+Calculate Malt Color Units
+
+**Returns**: <code>number</code> - (weight * lovibond) / volume  
+**Todo**
+
+- [ ] support kg for weight
+- [ ] support liter for volume
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| weight | <code>number</code> | weight of grain/fermentable (in lb) |
+| lovibond | <code>number</code> | color of grains in lovibond |
+| volume | <code>number</code> | batch size (in gallons) including deadspace/trub loss |
+
+**Example**  
+```js
+// return 5.727
+mcu(9, 3.5, 5.5);
+```
+<a name="module_srm."></a>
+
+## srm. ⇒ <code>number</code>
+Calculates color (SRM) of eer using standard reference method (Morey equation)
+
+**Returns**: <code>number</code> - 1.4922 x (MCU x 0.6859)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| ...mcuNum | <code>number</code> | MCU units to covert to SRM. Accepts infinite # of arguments. |
+
+**Example**  
+```js
+// returns 4.9
+srm(5.72);
+
+// returns 6.4
+srm(5.72, 2.54);
+```
+<a name="module_sg2gp"></a>
+
+## sg2gp ⇒ <code>number</code>
+Convert specific gravity (sg) to gravity points.
+
+**Returns**: <code>number</code> - (sg - 1) x 1000  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| sg | <code>number</code> | The specific gravity (sg) |
+
+**Example**  
+```js
+// return 88
+sg2gp(1.088);
+```
+<a name="module_gp2sg"></a>
+
+## gp2sg ⇒ <code>number</code>
+Convert gravity points to specific gravity (sg)
+
+**Returns**: <code>number</code> - (gravity points / 1000) + 1  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| gp | <code>number</code> | Gravitiy points |
+
+**Example**  
+```js
+// return 1.088
+gp2sg(88);
+```
+<a name="module_adjustWater"></a>
+
+## adjustWater ⇒ <code>number</code>
+Calculate water needed to reach target gravity.
+
+**Returns**: <code>number</code> - (volume x sg / target gravity points) - volume  
+**Todo**
+
+- [ ] support litres for input volume
+- [ ] support litres for return
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| sg | <code>number</code> | Current/Specific gravity (sg) |
+| tg | <code>number</code> | Target gravity |
+| volume | <code>number</code> | current volume (gallons) |
+
+**Example**  
+```js
+// return .64
+adjustWater(1.088, 1.078, 5);
+```
+<a name="module_adjustExtract"></a>
+
+## adjustExtract ⇒ <code>number</code>
+Calculate how much extract (in lb) is needed to reach target gravity.
+
+**Returns**: <code>number</code> - lb = (target gravity - sg) x volume / extract gravity points  
+**Todo**
+
+- [ ] support litres for input volume.
+- [ ] support kilograms for output volume
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| sg | <code>number</code> | Current / specific gravity (sg) |
+| tg | <code>number</code> | target gravity |
+| volume | <code>number</code> | volume (gallons) |
+| extract | <code>string</code> &#124; <code>number</code> | 'DME', 'LME', or custom gravity point value. |
+
+**Example**  
+```js
+// return 1.39
+adjustExtract(1.078, 1.088, 5, 'LME');
+
+// return 1.14
+adjustExtract(1.078, 1.088, 5, 'DME');
+
+// return 1.14
+adjustExtract(1.078, 1.088, 5, 46);
+```
+<a name="module_shrinkage"></a>
+
+## shrinkage ⇒ <code>number</code>
+Volume lost after wort cools (in gallons)
+
+**Returns**: <code>number</code> - volume x (percentage/100)  
+**Todo**
+
+- [ ] support input volume in litres
+- [ ] support return volume in litres
+
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| volume | <code>number</code> |  | volume of hot wort post boil (gallons) |
+| [percentage] | <code>number</code> | <code>4</code> | percentage the wort shrinks due to cooling |
+
+**Example**  
+```js
+// return 0.24
+shrinkage(6);
+
+// return something
+shrinkage(5, 3);
+```
+<a name="module_evapPerHour"></a>
+
+## evapPerHour ⇒ <code>number</code>
+Calculate how much volume (gallons) is lost per hour to evaperation
+
+**Returns**: <code>number</code> - volume x (percentage lost per hour / 100)  
+**Todo**
+
+- [ ] option for input volume to be litres
+- [ ] option for output volume to be litres
+
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| volume | <code>number</code> |  | pre-boil volume (gallons) |
+| rate | <code>number</code> |  | percentage or voluem lost per hour |
+| [measurement] | <code>string</code> | <code>&quot;percentage&quot;</code> | set rate lost per hour to either 'percentage' or 'volume' |
+
+**Example**  
+```js
+// return 0.60
+evapPerHour(6, 10);
+
+// return 0.60
+evapPerHour(6, 10, 'percentage');
+
+// return 0.50
+evapPerHour(6, .5, 'volume');
 ```
