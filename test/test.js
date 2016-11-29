@@ -310,10 +310,12 @@ describe('Boil Off test', () => {
   const evapRate = 10;
   const boilTime = 90;
   const shrinkageRate = 4;
+  const sg = 1.059;
   const evapLossPerHour = calc.evapLossPerHour(startingVolume, evapRate);
   const totalBoilLoss = calc.totalBoilLoss(evapLossPerHour, boilTime);
   const shrinkage = calc.shrinkage(startingVolume, totalBoilLoss, shrinkageRate);
   const postBoilVolume = calc.postBoilVolume(startingVolume, totalBoilLoss, shrinkage);
+  const postBoilGravity = calc.postBoilGravity(startingVolume, sg, postBoilVolume);
 
   it('correct amount lost to evap per hour', () => {
     assert.equal(evapLossPerHour, 0.70);
@@ -329,5 +331,9 @@ describe('Boil Off test', () => {
 
   it('calculate post boil volume', () => {
     assert.equal(postBoilVolume, 5.71);
+  });
+
+  it('calculate post boil gravity', () => {
+    assert.equal(postBoilGravity, 1.072);
   });
 });

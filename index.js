@@ -70,7 +70,7 @@ export const abw = (og, fg) => {
  * Convert specific gravity (sg) to plato
  * @module sg2plato
  * @param  {number} sg the specific gravity (sg)
- * @return {number}    (-616.868) + (1111.14 x sgravity) - (630.272 x sgravity^2) + (135.997 x sgravity^3)
+ * @return {number}    (-616.868) + (1111.14 x sg) - (630.272 x sg^2) + (135.997 x sg^3)
  *
  * @example
  * // returns 21.1
@@ -526,7 +526,7 @@ export const adjustExtract = (sg, tg, volume, extract) => {
  * @module evapLossPerHour
  * @param  {number} volume                     pre-boil volume (gallons)
  * @param  {number} ratePerHour                percentage or voluem lost per hour
- * @param  {string} [rateMeasurement=percentage] set rate lost per hour to either 'percentage' or 'volume'
+ * @param  {string} [rateMeasurement=percentage] set rate measurement to 'percentage' or 'volume'
  * @todo option for input volume to be liters
  * @todo option for output volume to be liters
  * @return {number} volume x (percentage lost per hour / 100)
