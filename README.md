@@ -149,7 +149,7 @@ abw(1.088, 1.013);
 ## sg2plato ⇒ <code>number</code>
 Convert specific gravity (sg) to plato
 
-**Returns**: <code>number</code> - (-616.868) + (1111.14 x sgravity) - (630.272 x sgravity^2) + (135.997 x sgravity^3)  
+**Returns**: <code>number</code> - (-616.868) + (1111.14 x sg) - (630.272 x sg^2) + (135.997 x sg^3)  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -498,7 +498,7 @@ Calculate how much volume (gallons) is lost per hour to evaperation
 | --- | --- | --- | --- |
 | volume | <code>number</code> |  | pre-boil volume (gallons) |
 | ratePerHour | <code>number</code> |  | percentage or voluem lost per hour |
-| [rateMeasurement] | <code>string</code> | <code>&quot;percentage&quot;</code> | set rate lost per hour to either 'percentage' or 'volume' |
+| [rateMeasurement] | <code>string</code> | <code>&quot;percentage&quot;</code> | set rate measurement to 'percentage' or 'volume' |
 
 **Example**  
 ```js
