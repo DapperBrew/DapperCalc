@@ -451,8 +451,8 @@ export const gp2sg = (gp) => {
  * @param  {number} sg     Current/Specific gravity (sg)
  * @param  {number} tg     Target gravity
  * @param  {number} volume current volume (gallons)
- * @todo support litres for input volume
- * @todo support litres for return
+ * @todo support liters for input volume
+ * @todo support liters for return
  * @return {number}        (volume x sg / target gravity points) - volume
  *
  * @example
@@ -482,7 +482,7 @@ export const adjustWater = (sg, tg, volume) => {
  * @param  {number} tg      target gravity
  * @param  {number} volume  volume (gallons)
  * @param  {(string|number)} extract 'DME', 'LME', or custom gravity point value.
- * @todo support litres for input volume.
+ * @todo support liters for input volume.
  * @todo support kilograms for output volume
  * @return {number}        lb = (target gravity - sg) x volume / extract gravity points
  *
@@ -522,41 +522,13 @@ export const adjustExtract = (sg, tg, volume, extract) => {
 
 
 /**
- * Volume lost after wort cools (in gallons)
- * @module shrinkage
- * @param  {number} volume     volume of hot wort post boil (gallons)
- * @param  {number} [percentage = 4] percentage the wort shrinks due to cooling
- * @todo support input volume in litres
- * @todo support return volume in litres
- * @return {number}            volume x (percentage/100)
- *
- * @example
- * // return 0.24
- * shrinkage(6);
- *
- * // return something
- * shrinkage(5, 3);
- */
-
-export const shrinkage = (volume, percentage = 4) => {
-  if (isNum(volume, percentage)) {
-    const calc = volume * (percentage / 100);
-    const calcRound = round(calc, 2);
-    return calcRound;
-  }
-  // if arguments are not a number, throw an error
-  throw new Error('arguments must be a number');
-};
-
-
-/**
  * Calculate how much volume (gallons) is lost per hour to evaperation
- * @module evapPerHour
+ * @module evapLossPerHour
  * @param  {number} volume                     pre-boil volume (gallons)
- * @param  {number} rate                       percentage or voluem lost per hour
- * @param  {string} [measurement=percentage] set rate lost per hour to either 'percentage' or 'volume'
- * @todo option for input volume to be litres
- * @todo option for output volume to be litres
+ * @param  {number} ratePerHour                percentage or voluem lost per hour
+ * @param  {string} [rateMeasurement=percentage] set rate lost per hour to either 'percentage' or 'volume'
+ * @todo option for input volume to be liters
+ * @todo option for output volume to be liters
  * @return {number} volume x (percentage lost per hour / 100)
  *
  * @example
@@ -570,17 +542,126 @@ export const shrinkage = (volume, percentage = 4) => {
  * evapPerHour(6, .5, 'volume');
  */
 
-export const evapPerHour = (volume, rate, measurement = 'percentage') => {
-  if (isNum(volume, rate)) {
-    if (measurement === 'percentage') {
-      const calc = volume * (rate / 100);
+export const evapLossPerHour = (volume, ratePerHour, rateMeasurement = 'percentage') => {
+  if (isNum(volume, ratePerHour)) {
+    if (rateMeasurement === 'percentage') {
+      const calc = volume * (ratePerHour / 100);
       const calcRound = round(calc, 2);
       return calcRound;
-    } else if (measurement === 'volume') {
-      const calcRound = round(rate, 2);
+    } else if (rateMeasurement === 'volume') {
+      const calcRound = round(ratePerHour, 2);
       return calcRound;
     }
     throw new Error('invalid measurement argument');
+  }
+  // if arguments are not a number, throw an error
+  throw new Error('volume & rate must be a number');
+};
+
+
+/**
+ * Calculate total volume (gallons) lost during boil to evaperation
+ * @module totalBoilLoss
+ * @param  {number} lossPerHour amount of volume (in lb) lost per hour to evaperation
+ * @param  {number} boilTime        length of boil (in minutes)
+ * @todo support volume input in liters
+ * @todo support volume output in liters
+ * @return {number}                 evapLossPerHour x (boilTime / 60)
+ *
+ * @example
+ * // return 0.90
+ * totalBoilLoss(.60, 90);
+ */
+
+export const totalBoilLoss = (lossPerHour, boilTime) => {
+  if (isNum(lossPerHour, boilTime)) {
+    const calc = lossPerHour * (boilTime / 60);
+    const calcRound = round(calc, 2);
+    return calcRound;
+  }
+  // if arguments are not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+/**
+ * Volume lost after wort cools (in gallons)
+ * @module shrinkage
+ * @param  {number} volume     pre-boil volume (gallons)
+ * @param  {number} boilLoss   Amount of volume (gallons) lost to boil.
+ * @param  {number} [percentage = 4] percentage the wort shrinks due to cooling
+ * @todo support input volume in liters
+ * @todo support return volume in liters
+ * @todo support boilLoss in liters
+ * @return {number}            volume x (percentage/100)
+ *
+ * @example
+ * // return 0.24
+ * shrinkage(7, 0.90);
+ *
+ * // return 0.15
+ * shrinkage(7, 0.90, 3);
+ */
+
+export const shrinkage = (volume, boilLoss, percentage = 4) => {
+  if (isNum(volume, boilLoss, percentage)) {
+    const calc = (volume - boilLoss) * (percentage / 100);
+    const calcRound = round(calc, 2);
+    return calcRound;
+  }
+  // if arguments are not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+
+/**
+ * Calculate post boil volume (gallons)
+ * @module postBoilVolume
+ * @param  {number} startVol   Starting volume pre-boil (gallons)
+ * @param  {number} boilLoss   volume loss to boil (gallons)
+ * @param  {number} shrinkLoss volume loss to shrinking during cooling (gallons)
+ * @todo support input startVal in liters
+ * @todo support input boilLoss in liters
+ * @todo support input shrinkLoss in liters
+ * @todo support return value in liters
+ * @return {number}            start_volume - (boil_loss + shrink_loss)
+ *
+ * @example
+ * // return 6.86
+ * postBoilVolume(7, 0.90, 0.24)
+ */
+
+export const postBoilVolume = (startVol, boilLoss, shrinkLoss) => {
+  if (isNum(startVol, boilLoss, shrinkLoss)) {
+    const calc = startVol - (boilLoss + shrinkLoss);
+    const calcRound = round(calc, 2);
+    return calcRound;
+  }
+  // if arguments are not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+
+/**
+ * Calculate post boil gravity.
+ * @module postBoilGravity
+ * @param  {number} startVol Starting volume (gallons)
+ * @param  {number} sg       starting gravity (sg)
+ * @param  {number} finalVol Final volume (gallons)
+ * @todo   support starting volume in liters
+ * @todo   support final volume in liters
+ * @return {number} (starting_volume x gravity_points) / final_volume
+ *
+ * @example
+ * // return 1.072
+ * postBoilGravity(7, 1.059, 5.71)
+ */
+
+export const postBoilGravity = (startVol, sg, finalVol) => {
+  if (isNum(startVol, sg, finalVol)) {
+    let calc = (startVol * sg2gp(sg)) / finalVol;
+    calc = gp2sg(calc);
+    const calcRound = round(calc, 3);
+    return calcRound;
   }
   // if arguments are not a number, throw an error
   throw new Error('arguments must be a number');

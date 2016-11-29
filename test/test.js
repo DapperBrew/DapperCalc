@@ -236,36 +236,98 @@ describe('adjustExtract', () => {
   });
 });
 
-// Shrinkage Calcuation Test
-describe('shrinkage', () => {
-  it('only allow numbers', () => {
-    assert.throw(() => { calc.shrinkage(5, 'meh'); }, Error);
-  });
-
-  it('should return correct amount of shrinkage (default value)', () => {
-    assert.equal(calc.shrinkage(6), 0.24);
-  });
-
-  it('should return correct amount of shrinkage (custom value)', () => {
-    assert.equal(calc.shrinkage(6, 3), 0.18);
-  });
-});
-
 // Loss per hour by evaperation Calcuation Test
-describe('evapPerHour', () => {
+describe('evapLossPerHour', () => {
   it('only allow numbers for volume & rate', () => {
-    assert.throw(() => { calc.evapPerHour(5, 'meh', 'volume'); }, Error);
+    assert.throw(() => { calc.evapLossPerHour(5, 'meh', 'volume'); }, Error);
   });
 
   it('should return correct amount lost per hour (default value)', () => {
-    assert.equal(calc.evapPerHour(6, 10), 0.60);
+    assert.equal(calc.evapLossPerHour(6, 10), 0.60);
   });
 
   it('should return correct amount lost per hour (percentage)', () => {
-    assert.equal(calc.evapPerHour(6, 10, 'percentage'), 0.60);
+    assert.equal(calc.evapLossPerHour(6, 10, 'percentage'), 0.60);
   });
 
   it('should return correct amount lost per hour (volume)', () => {
-    assert.equal(calc.evapPerHour(6, 0.5, 'volume'), 0.50);
+    assert.equal(calc.evapLossPerHour(6, 0.5, 'volume'), 0.50);
+  });
+});
+
+// Total Boil Lost to Volume Calcuation Test
+describe('totalBoilLoss', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.totalBoilLoss(0.60, 'meh'); }, Error);
+  });
+
+  it('should return correct amount of volume lost to boil', () => {
+    assert.equal(calc.totalBoilLoss(0.60, 90), 0.90);
+  });
+});
+
+// Shrinkage Calcuation Test
+describe('shrinkage', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.shrinkage(7, 'meh'); }, Error);
+  });
+
+  it('should return correct amount of shrinkage (default value)', () => {
+    assert.equal(calc.shrinkage(7, 0.90), 0.24);
+  });
+
+  it('should return correct amount of shrinkage (custom value)', () => {
+    assert.equal(calc.shrinkage(7, 0.90, 3), 0.18);
+  });
+});
+
+
+// Post Boil Volume Calcuation Test
+describe('postBoilVolume', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.postBoilVolume(0.60, 'meh'); }, Error);
+  });
+
+  it('should return correct amount of volume lost to boil', () => {
+    assert.equal(calc.postBoilVolume(7, 0.90, 0.24), 5.86);
+  });
+});
+
+// Post Boil Gravity Calculation Test
+describe('postBoilGravity', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.postBoilGravity(7, 'meh', 5.71); }, Error);
+  });
+
+  it('Shoul return the post boil gravity', () => {
+    assert.equal(calc.postBoilGravity(7, 1.059, 5.71), 1.072);
+  });
+});
+
+// Boil Off Test
+describe('Boil Off test', () => {
+  const startingVolume = 7;
+  const evapRate = 10;
+  const boilTime = 90;
+  const shrinkageRate = 4;
+  const evapLossPerHour = calc.evapLossPerHour(startingVolume, evapRate);
+  const totalBoilLoss = calc.totalBoilLoss(evapLossPerHour, boilTime);
+  const shrinkage = calc.shrinkage(startingVolume, totalBoilLoss, shrinkageRate);
+  const postBoilVolume = calc.postBoilVolume(startingVolume, totalBoilLoss, shrinkage);
+
+  it('correct amount lost to evap per hour', () => {
+    assert.equal(evapLossPerHour, 0.70);
+  });
+
+  it('correct total boil loss', () => {
+    assert.equal(totalBoilLoss, 1.05);
+  });
+
+  it('correct total loss from shrinkage', () => {
+    assert.equal(shrinkage, 0.24);
+  });
+
+  it('calculate post boil volume', () => {
+    assert.equal(postBoilVolume, 5.71);
   });
 });

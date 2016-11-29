@@ -93,11 +93,20 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 <dt><a href="#module_adjustExtract">adjustExtract</a> ⇒ <code>number</code></dt>
 <dd><p>Calculate how much extract (in lb) is needed to reach target gravity.</p>
 </dd>
+<dt><a href="#module_evapLossPerHour">evapLossPerHour</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate how much volume (gallons) is lost per hour to evaperation</p>
+</dd>
+<dt><a href="#module_totalBoilLoss">totalBoilLoss</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate total volume (gallons) lost during boil to evaperation</p>
+</dd>
 <dt><a href="#module_shrinkage">shrinkage</a> ⇒ <code>number</code></dt>
 <dd><p>Volume lost after wort cools (in gallons)</p>
 </dd>
-<dt><a href="#module_evapPerHour">evapPerHour</a> ⇒ <code>number</code></dt>
-<dd><p>Calculate how much volume (gallons) is lost per hour to evaperation</p>
+<dt><a href="#module_postBoilVolume">postBoilVolume</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate post boil volume (gallons)</p>
+</dd>
+<dt><a href="#module_postBoilGravity">postBoilGravity</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate post boil gravity.</p>
 </dd>
 </dl>
 
@@ -428,8 +437,8 @@ Calculate water needed to reach target gravity.
 **Returns**: <code>number</code> - (volume x sg / target gravity points) - volume  
 **Todo**
 
-- [ ] support litres for input volume
-- [ ] support litres for return
+- [ ] support liters for input volume
+- [ ] support liters for return
 
 
 | Param | Type | Description |
@@ -451,7 +460,7 @@ Calculate how much extract (in lb) is needed to reach target gravity.
 **Returns**: <code>number</code> - lb = (target gravity - sg) x volume / extract gravity points  
 **Todo**
 
-- [ ] support litres for input volume.
+- [ ] support liters for input volume.
 - [ ] support kilograms for output volume
 
 
@@ -473,48 +482,23 @@ adjustExtract(1.078, 1.088, 5, 'DME');
 // return 1.14
 adjustExtract(1.078, 1.088, 5, 46);
 ```
-<a name="module_shrinkage"></a>
+<a name="module_evapLossPerHour"></a>
 
-## shrinkage ⇒ <code>number</code>
-Volume lost after wort cools (in gallons)
-
-**Returns**: <code>number</code> - volume x (percentage/100)  
-**Todo**
-
-- [ ] support input volume in litres
-- [ ] support return volume in litres
-
-
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| volume | <code>number</code> |  | volume of hot wort post boil (gallons) |
-| [percentage] | <code>number</code> | <code>4</code> | percentage the wort shrinks due to cooling |
-
-**Example**  
-```js
-// return 0.24
-shrinkage(6);
-
-// return something
-shrinkage(5, 3);
-```
-<a name="module_evapPerHour"></a>
-
-## evapPerHour ⇒ <code>number</code>
+## evapLossPerHour ⇒ <code>number</code>
 Calculate how much volume (gallons) is lost per hour to evaperation
 
 **Returns**: <code>number</code> - volume x (percentage lost per hour / 100)  
 **Todo**
 
-- [ ] option for input volume to be litres
-- [ ] option for output volume to be litres
+- [ ] option for input volume to be liters
+- [ ] option for output volume to be liters
 
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
 | volume | <code>number</code> |  | pre-boil volume (gallons) |
-| rate | <code>number</code> |  | percentage or voluem lost per hour |
-| [measurement] | <code>string</code> | <code>&quot;percentage&quot;</code> | set rate lost per hour to either 'percentage' or 'volume' |
+| ratePerHour | <code>number</code> |  | percentage or voluem lost per hour |
+| [rateMeasurement] | <code>string</code> | <code>&quot;percentage&quot;</code> | set rate lost per hour to either 'percentage' or 'volume' |
 
 **Example**  
 ```js
@@ -526,4 +510,101 @@ evapPerHour(6, 10, 'percentage');
 
 // return 0.50
 evapPerHour(6, .5, 'volume');
+```
+<a name="module_totalBoilLoss"></a>
+
+## totalBoilLoss ⇒ <code>number</code>
+Calculate total volume (gallons) lost during boil to evaperation
+
+**Returns**: <code>number</code> - evapLossPerHour x (boilTime / 60)  
+**Todo**
+
+- [ ] support volume input in liters
+- [ ] support volume output in liters
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| lossPerHour | <code>number</code> | amount of volume (in lb) lost per hour to evaperation |
+| boilTime | <code>number</code> | length of boil (in minutes) |
+
+**Example**  
+```js
+// return 0.90
+totalBoilLoss(.60, 90);
+```
+<a name="module_shrinkage"></a>
+
+## shrinkage ⇒ <code>number</code>
+Volume lost after wort cools (in gallons)
+
+**Returns**: <code>number</code> - volume x (percentage/100)  
+**Todo**
+
+- [ ] support input volume in liters
+- [ ] support return volume in liters
+- [ ] support boilLoss in liters
+
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| volume | <code>number</code> |  | pre-boil volume (gallons) |
+| boilLoss | <code>number</code> |  | Amount of volume (gallons) lost to boil. |
+| [percentage] | <code>number</code> | <code>4</code> | percentage the wort shrinks due to cooling |
+
+**Example**  
+```js
+// return 0.24
+shrinkage(7, 0.90);
+
+// return 0.15
+shrinkage(7, 0.90, 3);
+```
+<a name="module_postBoilVolume"></a>
+
+## postBoilVolume ⇒ <code>number</code>
+Calculate post boil volume (gallons)
+
+**Returns**: <code>number</code> - start_volume - (boil_loss + shrink_loss)  
+**Todo**
+
+- [ ] support input startVal in liters
+- [ ] support input boilLoss in liters
+- [ ] support input shrinkLoss in liters
+- [ ] support return value in liters
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| startVol | <code>number</code> | Starting volume pre-boil (gallons) |
+| boilLoss | <code>number</code> | volume loss to boil (gallons) |
+| shrinkLoss | <code>number</code> | volume loss to shrinking during cooling (gallons) |
+
+**Example**  
+```js
+// return 6.86
+postBoilVolume(7, 0.90, 0.24)
+```
+<a name="module_postBoilGravity"></a>
+
+## postBoilGravity ⇒ <code>number</code>
+Calculate post boil gravity.
+
+**Returns**: <code>number</code> - (starting_volume x gravity_points) / final_volume  
+**Todo**
+
+- [ ] support starting volume in liters
+- [ ] support final volume in liters
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| startVol | <code>number</code> | Starting volume (gallons) |
+| sg | <code>number</code> | starting gravity (sg) |
+| finalVol | <code>number</code> | Final volume (gallons) |
+
+**Example**  
+```js
+// return 1.072
+postBoilGravity(7, 1.059, 5.71)
 ```
