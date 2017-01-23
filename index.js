@@ -288,7 +288,7 @@ export const aau = (weight, aa) => {
  * Hop Utilization (Tinseth)
  * @module utilization
  * @param  {number} time      time left in boil (minutes)
- * @param  {number} gravity   Specific gravity (sg)
+ * @param  {number} gravity   Specific gravity (sg) of pre-boil wort
  * @see {@link http://realbeer.com/hops/research.html|realbeer.com}
  * @todo   Add rager scale option
  * @return {number}           utilization = bigness factor x boil time factor
@@ -316,7 +316,7 @@ export const utilization = (time, gravity) => {
  * @param  {number} weight  Weight of hops (oz)
  * @param  {number} aa      Alpha acids percentage of hops
  * @param  {number} time   time left in boil (minutes)
- * @param  {number} gravity Specific Gravity of wort when adding hops
+ * @param  {number} gravity Specific Gravity of wort (pre-boil)
  * @param  {number} volume  post boil volume (gallons)
  * @see {@link http://howtobrew.com/book/section-1/hops/hop-bittering-calculations|howtobrew.com/}
  * @todo allow for grams for hops
