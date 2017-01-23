@@ -337,3 +337,14 @@ describe('Boil Off test', () => {
     assert.equal(postBoilGravity, 1.072);
   });
 });
+
+// Post Boil Gravity Calculation Test
+describe('estimateOriginalGravity', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.estimateOriginalGravity(7, 'meh', 72, 5.5); }, Error);
+  });
+
+  it('Should return estimated OG', () => {
+    assert.equal(calc.estimateOriginalGravity(350, 74, 5.5), 1.047);
+  });
+});

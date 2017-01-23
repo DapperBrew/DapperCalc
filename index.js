@@ -666,3 +666,27 @@ export const postBoilGravity = (startVol, sg, finalVol) => {
   // if arguments are not a number, throw an error
   throw new Error('arguments must be a number');
 };
+
+/**
+ * Estimate Original Gravity
+ * @module estimateOriginalGravity
+ * @param {number} gravityPoints Total gravity points of fermentables
+ * @param {number} efficiency estimated brewhouse efficiency
+ * @param {number} finalVolume final volume into fermentor
+ * @todo support final volume in liters
+ * @return {number} (gravityPoints * efficiency) / finalVolume
+ *
+ * @example
+ * // return 1.047
+ * estimateOriginalGravity(350, 74, 5.5)
+ */
+
+export const estimateOriginalGravity = (gravityPoints, efficiency, finalVolume) => {
+  if (isNum(gravityPoints, efficiency, finalVolume)) {
+    let calc = ((gravityPoints * efficiency * 0.01) / finalVolume);
+    calc = gp2sg(calc);
+    const calcRound = round(calc, 3);
+    return calcRound;
+  }
+  throw new Error('arguments must be a number');
+};

@@ -108,6 +108,9 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 <dt><a href="#module_postBoilGravity">postBoilGravity</a> ⇒ <code>number</code></dt>
 <dd><p>Calculate post boil gravity.</p>
 </dd>
+<dt><a href="#module_estimateOriginalGravity">estimateOriginalGravity</a> ⇒ <code>number</code></dt>
+<dd><p>Estimate Original Gravity</p>
+</dd>
 </dl>
 
 <a name="module_abv"></a>
@@ -320,7 +323,7 @@ Hop Utilization (Tinseth)
 | Param | Type | Description |
 | --- | --- | --- |
 | time | <code>number</code> | time left in boil (minutes) |
-| gravity | <code>number</code> | Specific gravity (sg) |
+| gravity | <code>number</code> | Specific gravity (sg) of pre-boil wort |
 
 **Example**  
 ```js
@@ -347,7 +350,7 @@ Calculate IBU for hop addition (Tinseth / pellets)
 | weight | <code>number</code> | Weight of hops (oz) |
 | aa | <code>number</code> | Alpha acids percentage of hops |
 | time | <code>number</code> | time left in boil (minutes) |
-| gravity | <code>number</code> | Specific Gravity of wort when adding hops |
+| gravity | <code>number</code> | Specific Gravity of wort (pre-boil) |
 | volume | <code>number</code> | post boil volume (gallons) |
 
 **Example**  
@@ -607,4 +610,26 @@ Calculate post boil gravity.
 ```js
 // return 1.072
 postBoilGravity(7, 1.059, 5.71)
+```
+<a name="module_estimateOriginalGravity"></a>
+
+## estimateOriginalGravity ⇒ <code>number</code>
+Estimate Original Gravity
+
+**Returns**: <code>number</code> - (gravityPoints * efficiency) / finalVolume  
+**Todo**
+
+- [ ] support final volume in liters
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| gravityPoints | <code>number</code> | Total gravity points of fermentables |
+| efficiency | <code>number</code> | estimated brewhouse efficiency |
+| finalVolume | <code>number</code> | final volume into fermentor |
+
+**Example**  
+```js
+// return number
+estimateOriginalGravity(88, 72, 5.5)
 ```
