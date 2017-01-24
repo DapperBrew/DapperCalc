@@ -2,14 +2,16 @@
   "name": "dapper-calc",
   "version": "1.0.0",
   "description": "Calculations for Dapper",
-  "main": "index.js",
+  "main": "./build/index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-core/register ./test/test.js",
-    "docs": "jsdoc2md --template README.hbs --files index.js > README.md"
+    "docs": "jsdoc2md --template README.hbs --files index.js > README.md",
+    "build": "babel index.js --out-file ./build/index.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "babel-cli": "^6.22.2",
     "chai": "^3.5.0",
     "eslint": "^3.11.0",
     "eslint-config-airbnb-base": "^10.0.1",
