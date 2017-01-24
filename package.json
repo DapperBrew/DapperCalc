@@ -2,7 +2,7 @@
   "name": "dapper-calc",
   "version": "1.0.0",
   "description": "Calculations for Dapper",
-  "main": "DapperCalc.js",
+  "main": "index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-core/register ./test/test.js",
     "docs": "jsdoc2md --template README.hbs --files index.js > README.md"
