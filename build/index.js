@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.estimateOriginalGravity = exports.postBoilGravity = exports.postBoilVolume = exports.shrinkage = exports.totalBoilLoss = exports.evapLossPerHour = exports.adjustExtract = exports.adjustWater = exports.gp2sg = exports.sg2gp = exports.srm = exports.mcu = exports.ibu = exports.utilization = exports.aau = exports.rAttenuation = exports.aAttenuation = exports.caloriesTotal = exports.caloriesCarbs = exports.caloriesAlcohol = exports.realExtract = exports.plato2sg = exports.sg2plato = exports.abw = exports.abv = undefined;
+exports.estimateOriginalGravity = exports.postBoilGravity = exports.postBoilVolume = exports.shrinkage = exports.totalBoilLoss = exports.evapLossPerHour = exports.adjustExtract = exports.adjustWater = exports.gp2sg = exports.sg2gp = exports.srm = exports.mcu = exports.lovibond2srm = exports.srm2lovibond = exports.ibu = exports.utilization = exports.aau = exports.rAttenuation = exports.aAttenuation = exports.caloriesTotal = exports.caloriesCarbs = exports.caloriesAlcohol = exports.realExtract = exports.plato2sg = exports.sg2plato = exports.abw = exports.abv = undefined;
 
 var _round = require('lodash/round');
 
@@ -346,6 +346,58 @@ var ibu = exports.ibu = function ibu(weight, aa, time, gravity, volume) {
 
     // multiply by 1.1 to account for pellet vs whole hop
     calc *= 1.1;
+    var calcRound = (0, _round2.default)(calc, 1);
+    return calcRound;
+  }
+
+  // if its not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+/**
+ * SRM to Lovibond
+ * @module srm2lovibond
+ * @param  {number} srm   SRM # to be converted
+ * @see {@link https://en.wikipedia.org/wiki/Standard_Reference_Method}
+ * @return {number}   Lovibond = (SRM + 0.76) / 1.3546
+ *
+ * @example
+ * // return 6.5
+ * srm2lovibond(8);
+ *
+ * // return 22.7
+ * srm2lovibond(30);
+ */
+
+var srm2lovibond = exports.srm2lovibond = function srm2lovibond(srm) {
+  if (isNum(srm)) {
+    var calc = (srm + 0.76) / 1.3546;
+    var calcRound = (0, _round2.default)(calc, 1);
+    return calcRound;
+  }
+
+  // if its not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+/**
+ * Lovibond to SRM
+ * @module lovibond2srm
+ * @param  {number} srm   Lovibond # to be converted
+ * @see {@link https://en.wikipedia.org/wiki/Standard_Reference_Method}
+ * @return {number}   SRM = (1.3546 × lovibond) - 0.76
+ *
+ * @example
+ * // return 8.7
+ * lovibond2srm(7);
+ *
+ * // return 30.4
+ * lovibond2srm(23);
+ */
+
+var lovibond2srm = exports.lovibond2srm = function lovibond2srm(lovibond) {
+  if (isNum(lovibond)) {
+    var calc = 1.3546 * lovibond - 0.76;
     var calcRound = (0, _round2.default)(calc, 1);
     return calcRound;
   }
