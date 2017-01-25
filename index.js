@@ -346,6 +346,60 @@ export const ibu = (weight, aa, time, gravity, volume) => {
 
 
 /**
+ * SRM to Lovibond
+ * @module srm2lovibond
+ * @param  {number} srm   SRM # to be converted
+ * @see {@link https://en.wikipedia.org/wiki/Standard_Reference_Method}
+ * @return {number}   Lovibond = (SRM + 0.76) / 1.3546
+ *
+ * @example
+ * // return 6.5
+ * srm2lovibond(8);
+ *
+ * // return 22.7
+ * srm2lovibond(30);
+ */
+
+export const srm2lovibond = (srm) => {
+  if (isNum(srm)) {
+    const calc = (srm + 0.76) / 1.3546;
+    const calcRound = round(calc, 1);
+    return calcRound;
+  }
+
+  // if its not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+
+/**
+ * Lovibond to SRM
+ * @module lovibond2srm
+ * @param  {number} srm   Lovibond # to be converted
+ * @see {@link https://en.wikipedia.org/wiki/Standard_Reference_Method}
+ * @return {number}   SRM = (1.3546 × lovibond) - 0.76
+ *
+ * @example
+ * // return 8.7
+ * lovibond2srm(7);
+ *
+ * // return 30.4
+ * lovibond2srm(23);
+ */
+
+export const lovibond2srm = (lovibond) => {
+  if (isNum(lovibond)) {
+    const calc = (1.3546 * lovibond) - 0.76;
+    const calcRound = round(calc, 1);
+    return calcRound;
+  }
+
+  // if its not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+
+/**
  * Calculate Malt Color Units
  * @module mcu
  * @param  {number} weight   weight of grain/fermentable (in lb)

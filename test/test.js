@@ -5,7 +5,7 @@ import { describe, it } from 'mocha';
 
 // import { abv, abw, sg2plato } from '../';
 
-import * as calc from '../';
+import * as calc from '../index';
 
 
 // ABV Calcuation Test
@@ -160,6 +160,33 @@ describe('ibu', () => {
     assert.equal(calc.ibu(1.5, 12, 60, 1.048, 5.5), 63.3);
   });
 });
+
+
+// SRM to Lovibond Test
+describe('srm2lovibond', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.srm2lovibond('meh'); }, Error);
+  });
+
+  it('should return correct lovibond', () => {
+    assert.equal(calc.srm2lovibond(8), 6.5);
+    assert.equal(calc.srm2lovibond(30), 22.7);
+  });
+});
+
+
+// Lovibond to SRM Test
+describe('lovibond2srm', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.lovibond2srm('meh'); }, Error);
+  });
+
+  it('should return correct lovibond', () => {
+    assert.equal(calc.lovibond2srm(7), 8.7);
+    assert.equal(calc.lovibond2srm(23), 30.4);
+  });
+});
+
 
 // MCU Calcuation Test
 describe('mcu', () => {

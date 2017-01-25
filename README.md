@@ -75,6 +75,12 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 <dt><a href="#module_ibu">ibu</a> ⇒ <code>number</code></dt>
 <dd><p>Calculate IBU for hop addition (Tinseth / pellets)</p>
 </dd>
+<dt><a href="#module_srm2lovibond">srm2lovibond</a> ⇒ <code>number</code></dt>
+<dd><p>SRM to Lovibond</p>
+</dd>
+<dt><a href="#module_lovibond2srm">lovibond2srm</a> ⇒ <code>number</code></dt>
+<dd><p>Lovibond to SRM</p>
+</dd>
 <dt><a href="#module_mcu">mcu</a> ⇒ <code>number</code></dt>
 <dd><p>Calculate Malt Color Units</p>
 </dd>
@@ -358,6 +364,46 @@ Calculate IBU for hop addition (Tinseth / pellets)
 // returns 63.3
 ibu(1.5, 12, 60, 1.048, 5.5);
 ```
+<a name="module_srm2lovibond"></a>
+
+## srm2lovibond ⇒ <code>number</code>
+SRM to Lovibond
+
+**Returns**: <code>number</code> - Lovibond = (SRM + 0.76) / 1.3546  
+**See**: [https://en.wikipedia.org/wiki/Standard_Reference_Method](https://en.wikipedia.org/wiki/Standard_Reference_Method)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| srm | <code>number</code> | SRM # to be converted |
+
+**Example**  
+```js
+// return 6.5
+srm2lovibond(8);
+
+// return 22.7
+srm2lovibond(30);
+```
+<a name="module_lovibond2srm"></a>
+
+## lovibond2srm ⇒ <code>number</code>
+Lovibond to SRM
+
+**Returns**: <code>number</code> - SRM = (1.3546 × lovibond) - 0.76  
+**See**: [https://en.wikipedia.org/wiki/Standard_Reference_Method](https://en.wikipedia.org/wiki/Standard_Reference_Method)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| srm | <code>number</code> | Lovibond # to be converted |
+
+**Example**  
+```js
+// return 8.7
+lovibond2srm(7);
+
+// return 30.4
+lovibond2srm(23);
+```
 <a name="module_mcu"></a>
 
 ## mcu ⇒ <code>number</code>
@@ -630,6 +676,6 @@ Estimate Original Gravity
 
 **Example**  
 ```js
-// return number
-estimateOriginalGravity(88, 72, 5.5)
+// return 1.047
+estimateOriginalGravity(350, 74, 5.5)
 ```
