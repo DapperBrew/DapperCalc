@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.estimateOriginalGravity = exports.postBoilGravity = exports.postBoilVolume = exports.shrinkage = exports.totalBoilLoss = exports.evapLossPerHour = exports.adjustExtract = exports.adjustWater = exports.gp2sg = exports.sg2gp = exports.srm = exports.mcu = exports.lovibond2srm = exports.srm2lovibond = exports.ibu = exports.utilization = exports.aau = exports.rAttenuation = exports.aAttenuation = exports.caloriesTotal = exports.caloriesCarbs = exports.caloriesAlcohol = exports.realExtract = exports.plato2sg = exports.sg2plato = exports.abw = exports.abv = undefined;
+exports.estimateOriginalGravity = exports.postBoilGravity = exports.postBoilVolume = exports.shrinkage = exports.totalBoilLoss = exports.evapLossPerHour = exports.adjustExtract = exports.adjustWater = exports.dilute = exports.gp2sg = exports.sg2gp = exports.srm = exports.mcu = exports.lovibond2srm = exports.srm2lovibond = exports.ibu = exports.utilization = exports.aau = exports.rAttenuation = exports.aAttenuation = exports.caloriesTotal = exports.caloriesCarbs = exports.caloriesAlcohol = exports.realExtract = exports.plato2sg = exports.sg2plato = exports.abw = exports.abv = undefined;
 
 var _round = require('lodash/round');
 
@@ -328,6 +328,7 @@ var utilization = exports.utilization = function utilization(time, gravity) {
  * @param  {number} time   time left in boil (minutes)
  * @param  {number} gravity Specific Gravity of wort (pre-boil)
  * @param  {number} volume  post boil volume (gallons)
+ * @param  {number} adjust percentage to adjust hop utilization
  * @see {@link http://howtobrew.com/book/section-1/hops/hop-bittering-calculations|howtobrew.com/}
  * @todo allow for grams for hops
  * @todo allow for liter for volume
@@ -340,12 +341,16 @@ var utilization = exports.utilization = function utilization(time, gravity) {
  * ibu(1.5, 12, 60, 1.048, 5.5);
  */
 
-var ibu = exports.ibu = function ibu(weight, aa, time, gravity, volume) {
+var ibu = exports.ibu = function ibu(weight, aa, time, gravity, volume, adjust) {
   if (isNum(weight, aa, time, gravity, volume)) {
-    var calc = aau(weight, aa) * utilization(time, gravity) * 74.89 / volume;
+    var utilizationNum = void 0;
+    if (adjust) {
+      utilizationNum = utilization(time, gravity) * (adjust / 100 + 1);
+    } else {
+      utilizationNum = utilization(time, gravity);
+    }
+    var calc = aau(weight, aa) * utilizationNum * 74.89 / volume;
 
-    // multiply by 1.1 to account for pellet vs whole hop
-    calc *= 1.1;
     var calcRound = (0, _round2.default)(calc, 1);
     return calcRound;
   }
@@ -436,7 +441,7 @@ var mcu = exports.mcu = function mcu(weight, lovibond, volume) {
  * Calculates color (SRM) of eer using standard reference method (Morey equation)
  * @module srm.
  * @param  {...number} mcuNum MCU units to covert to SRM. Accepts infinite # of arguments.
- * @return {number}      1.4922 x (MCU x 0.6859)
+ * @return {number}      1.4922 x (MCU ^ 0.6859)
  *
  * @example
  * // returns 4.9
@@ -497,6 +502,31 @@ var gp2sg = exports.gp2sg = function gp2sg(gp) {
   if (isNum(gp)) {
     var calc = gp / 1000 + 1;
     return calc;
+  }
+  // if its not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+/**
+ * Calculate new SG when wort is diluted
+ * @module dilute
+ * @param  {number} sg Specific Gravity of pre-diluted wort
+ * @param  {number} volume initial volume
+ * @param  {number} volumeAdd Volume of water to add
+ * @return {number}  (returns SG) GP = (Initial Volume * initial GP) / New Total Volume
+ *
+ * @example
+ * // return 1.046
+ * dilute(1.054, 6, 1);
+ */
+
+var dilute = exports.dilute = function dilute(sg, volume, volumeAdd) {
+  if (isNum(sg, volume, volumeAdd)) {
+    var sgNum = sg2gp(sg);
+    var calc = sgNum * volume / (volume + volumeAdd);
+    calc = gp2sg(calc);
+    var calcRound = (0, _round2.default)(calc, 3);
+    return calcRound;
   }
   // if its not a number, throw an error
   throw new Error('arguments must be a number');

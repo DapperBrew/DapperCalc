@@ -157,7 +157,8 @@ describe('ibu', () => {
   });
 
   it('should return correct hop ibu', () => {
-    assert.equal(calc.ibu(1.5, 12, 60, 1.048, 5.5), 63.3);
+    assert.equal(calc.ibu(1.5, 12, 60, 1.048, 5.5), 57.6);
+    assert.equal(calc.ibu(1.5, 12, 60, 1.048, 5.5, 10), 63.3);
   });
 });
 
@@ -230,6 +231,17 @@ describe('gp2sg', () => {
 
   it('should return correct specific gravity', () => {
     assert.equal(calc.gp2sg(88), 1.088);
+  });
+});
+
+// SG of diluted water test
+describe('dilute', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.dilute('meh'); }, Error);
+  });
+
+  it('should return correct specific gravity', () => {
+    assert.equal(calc.dilute(1.054, 6, 1), 1.046);
   });
 });
 

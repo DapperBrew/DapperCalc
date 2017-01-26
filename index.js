@@ -318,6 +318,7 @@ export const utilization = (time, gravity) => {
  * @param  {number} time   time left in boil (minutes)
  * @param  {number} gravity Specific Gravity of wort (pre-boil)
  * @param  {number} volume  post boil volume (gallons)
+ * @param  {number} adjust percentage to adjust hop utilization
  * @see {@link http://howtobrew.com/book/section-1/hops/hop-bittering-calculations|howtobrew.com/}
  * @todo allow for grams for hops
  * @todo allow for liter for volume
@@ -330,12 +331,16 @@ export const utilization = (time, gravity) => {
  * ibu(1.5, 12, 60, 1.048, 5.5);
  */
 
-export const ibu = (weight, aa, time, gravity, volume) => {
+export const ibu = (weight, aa, time, gravity, volume, adjust) => {
   if (isNum(weight, aa, time, gravity, volume)) {
-    let calc = (aau(weight, aa) * utilization(time, gravity) * 74.89) / volume;
+    let utilizationNum;
+    if (adjust) {
+      utilizationNum = utilization(time, gravity) * ((adjust / 100) + 1);
+    } else {
+      utilizationNum = utilization(time, gravity);
+    }
+    const calc = (aau(weight, aa) * utilizationNum * 74.89) / volume;
 
-    // multiply by 1.1 to account for pellet vs whole hop
-    calc *= 1.1;
     const calcRound = round(calc, 1);
     return calcRound;
   }
@@ -430,7 +435,7 @@ export const mcu = (weight, lovibond, volume) => {
  * Calculates color (SRM) of eer using standard reference method (Morey equation)
  * @module srm.
  * @param  {...number} mcuNum MCU units to covert to SRM. Accepts infinite # of arguments.
- * @return {number}      1.4922 x (MCU x 0.6859)
+ * @return {number}      1.4922 x (MCU ^ 0.6859)
  *
  * @example
  * // returns 4.9
@@ -493,6 +498,32 @@ export const gp2sg = (gp) => {
   if (isNum(gp)) {
     const calc = (gp / 1000) + 1;
     return calc;
+  }
+  // if its not a number, throw an error
+  throw new Error('arguments must be a number');
+};
+
+
+/**
+ * Calculate new SG when wort is diluted
+ * @module dilute
+ * @param  {number} sg Specific Gravity of pre-diluted wort
+ * @param  {number} volume initial volume
+ * @param  {number} volumeAdd Volume of water to add
+ * @return {number}  (returns SG) GP = (Initial Volume * initial GP) / New Total Volume
+ *
+ * @example
+ * // return 1.046
+ * dilute(1.054, 6, 1);
+ */
+
+export const dilute = (sg, volume, volumeAdd) => {
+  if (isNum(sg, volume, volumeAdd)) {
+    const sgNum = sg2gp(sg);
+    let calc = (sgNum * volume) / (volume + volumeAdd);
+    calc = gp2sg(calc);
+    const calcRound = round(calc, 3);
+    return calcRound;
   }
   // if its not a number, throw an error
   throw new Error('arguments must be a number');

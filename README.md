@@ -93,6 +93,9 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 <dt><a href="#module_gp2sg">gp2sg</a> ⇒ <code>number</code></dt>
 <dd><p>Convert gravity points to specific gravity (sg)</p>
 </dd>
+<dt><a href="#module_dilute">dilute</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate new SG when wort is diluted</p>
+</dd>
 <dt><a href="#module_adjustWater">adjustWater</a> ⇒ <code>number</code></dt>
 <dd><p>Calculate water needed to reach target gravity.</p>
 </dd>
@@ -358,6 +361,7 @@ Calculate IBU for hop addition (Tinseth / pellets)
 | time | <code>number</code> | time left in boil (minutes) |
 | gravity | <code>number</code> | Specific Gravity of wort (pre-boil) |
 | volume | <code>number</code> | post boil volume (gallons) |
+| adjust | <code>number</code> | percentage to adjust hop utilization |
 
 **Example**  
 ```js
@@ -432,7 +436,7 @@ mcu(9, 3.5, 5.5);
 ## srm. ⇒ <code>number</code>
 Calculates color (SRM) of eer using standard reference method (Morey equation)
 
-**Returns**: <code>number</code> - 1.4922 x (MCU x 0.6859)  
+**Returns**: <code>number</code> - 1.4922 x (MCU ^ 0.6859)  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -477,6 +481,24 @@ Convert gravity points to specific gravity (sg)
 ```js
 // return 1.088
 gp2sg(88);
+```
+<a name="module_dilute"></a>
+
+## dilute ⇒ <code>number</code>
+Calculate new SG when wort is diluted
+
+**Returns**: <code>number</code> - (returns SG) GP = (Initial Volume * initial GP) / New Total Volume  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| sg | <code>number</code> | Specific Gravity of pre-diluted wort |
+| volume | <code>number</code> | initial volume |
+| volumeAdd | <code>number</code> | Volume of water to add |
+
+**Example**  
+```js
+// return 1.046
+dilute(1.054, 6, 1);
 ```
 <a name="module_adjustWater"></a>
 
