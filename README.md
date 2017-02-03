@@ -127,7 +127,8 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 ## abv ⇒ <code>number</code>
 Calculates the alcohol by volume (abv) <br>
 
-**Returns**: <code>number</code> - (((1.05 x (og - fg)) / fg) / 0.79) x 100;  
+**Returns**: <code>number</code> - (((1.05 x (og - fg)) / fg) / 0.79) x 100;
+explore this advanced calc: ABV =(76.08 * (og-fg) / (1.775-og)) * (fg / 0.794)  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -684,20 +685,21 @@ postBoilGravity(7, 1.059, 5.71)
 ## estimateOriginalGravity ⇒ <code>number</code>
 Estimate Original Gravity
 
-**Returns**: <code>number</code> - (gravityPoints * efficiency) / finalVolume  
+**Returns**: <code>number</code> - (gravityPoints * efficiency) / volume  
 **Todo**
 
-- [ ] support final volume in liters
+- [ ] support liters
 
 
 | Param | Type | Description |
 | --- | --- | --- |
 | gravityPoints | <code>number</code> | Total gravity points of fermentables |
-| efficiency | <code>number</code> | estimated brewhouse efficiency |
-| finalVolume | <code>number</code> | final volume into fermentor |
+| sugarPoints | <code>number</code> | Total gravity points from sugars (dextrose, etc) |
+| efficiency | <code>number</code> | (mash or brewhouse) |
+| vol | <code>number</code> | into fermentor (if brewhouse eff) or pre-boil vol (if mash eff) |
 
 **Example**  
 ```js
-// return 1.047
-estimateOriginalGravity(350, 74, 5.5)
+// return 1.061
+estimateOriginalGravity(429, 46, 75, 6)
 ```

@@ -1,6 +1,6 @@
 {
   "name": "dapper-calc",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Calculations for Dapper",
   "main": "./build/index.js",
   "scripts": {
