@@ -19,8 +19,8 @@ describe('abv', () => {
   });
 
   it('should return correct ABV', () => {
-    assert.equal(calc.abv(1.089, 1.012), 10.11);
-    assert.equal(calc.abv(1.089, 1.019), 9.13);
+    assert.equal(calc.abv(1.089, 1.012), 10.20);
+    assert.equal(calc.abv(1.089, 1.019), 9.28);
   });
 });
 
@@ -35,8 +35,8 @@ describe('abw', () => {
   });
 
   it('should return correct ABW', () => {
-    assert.equal(calc.abw(1.089, 1.012), 8.02);
-    assert.equal(calc.abw(1.089, 1.019), 7.24);
+    assert.equal(calc.abw(1.089, 1.012), 8.0);
+    assert.equal(calc.abw(1.089, 1.019), 7.23);
   });
 });
 
@@ -69,7 +69,7 @@ describe('realExtract', () => {
   });
 
   it('should return correct real extraction number', () => {
-    assert.equal(calc.realExtract(1.088, 1.012), 6.3544);
+    assert.equal(calc.realExtract(1.088, 1.012), 6.5697);
   });
 });
 
@@ -124,7 +124,7 @@ describe('rAttenuation', () => {
   });
 
   it('should return correct real attenuation', () => {
-    assert.equal(calc.rAttenuation(1.088, 1.012), 69.9);
+    assert.equal(calc.rAttenuation(1.088, 1.012), 68.9);
   });
 });
 

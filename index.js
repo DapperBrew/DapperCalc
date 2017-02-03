@@ -10,64 +10,6 @@ const isNum = (...args) => every(args, isFinite);
 // Calculations
 
 /**
- * Calculates the alcohol by volume (abv) <br>
- * @module abv
- * @param  {number} og original gravity (og)
- * @param  {number} fg final gravity (fg)
- * @return {number} (((1.05 x (og - fg)) / fg) / 0.79) x 100;
- * explore this advanced calc: ABV =(76.08 * (og-fg) / (1.775-og)) * (fg / 0.794)
- *
- * @example
- * // returns 9.84
- * abv(1.088, 1.013);
- */
-
-export const abv = (og, fg) => {
-  if (!isNum(og, fg)) {
-    // if not a number, throw an error
-    throw new Error('arguments must be a number');
-  } else if (og < fg) {
-    // if original gravity is less than final gravity, throw an error
-    throw new Error('Original Gravity should be greater than Final Gravity');
-  } else {
-    const calc = (((1.05 * (og - fg)) / fg) / 0.79) * 100;
-    const calcRound = round(calc, 2);
-
-    return calcRound;
-  }
-};
-
-
-/**
- * Calculates the Alcohol by weight (ABW)
- * @module abw
- * @param  {number} og The original gravity (og)
- * @param  {number} fg The final gravity (nfg)
- * @return {number} (abv x 0.79336) / fg
- *
- * @example
- * // returns 7.71
- * abw(1.088, 1.013);
- */
-
-export const abw = (og, fg) => {
-  if (!isNum(og, fg)) {
-    // if arguments are not a number, throw error
-    throw new Error('arguments must be a number');
-  } else if (og < fg) {
-    // if original gravity is not greater than final gravity, throw error
-    throw new Error('Original Gravity should be greater than Final Gravity');
-  } else {
-    const theabv = abv(og, fg);
-    const calc = theabv * 0.79336;
-    const calcRound = round(calc, 2);
-
-    return calcRound;
-  }
-};
-
-
-/**
  * Convert specific gravity (sg) to plato
  * @module sg2plato
  * @param  {number} sg the specific gravity (sg)
@@ -114,29 +56,160 @@ export const plato2sg = (plato) => {
   throw new Error('arguments must be a number');
 };
 
+
+/**
+ * Calculate original extract from original gravity.
+ * @module originalExtract
+ * @param  {number} og original gravity (og)
+ * @see Dr. Michael Hall article, Zymurgy, Summer 1995
+ * @return {number} OE = -668.962 + (1262.45 * OG ) - (776.43 * OG^2) + (182.94 * OG^3)
+ *
+ * @example
+ * // returns 21.1
+ * originalExtract(1.088);
+ */
+
+export const originalExtract = (og) => {
+  if (isNum(og)) {
+    const calc = -668.962 + (1262.45 * og) - (776.43 * (og ** 2)) + (182.94 * (og ** 3));
+    return calc;
+  }
+
+  // if its not a number, throw an error
+  throw new Error('originalExtract arguments must be a number');
+};
+
+
+/**
+ * Calculate apparent extract from final gravity.
+ * @module apparentExtract
+ * @param  {number} fg final gravity (fg)
+ * @see Dr. Michael Hall article, Zymurgy, Summer 1995
+ * @return {number} AE = -668.962 + (1262.45 * FG ) - (776.43 * FG^2) + (182.94 * FG^3)
+ *
+ * @example
+ * // returns 3.07
+ * apparentExtract(1.012);
+ */
+
+export const apparentExtract = (fg) => {
+  if (isNum(fg)) {
+    const calc = -668.962 + (1262.45 * fg) - (776.43 * (fg ** 2)) + (182.94 * (fg ** 3));
+    return calc;
+  }
+
+  // if its not a number, throw an error
+  throw new Error('apparentExtract arguments must be a number');
+};
+
+
+/**
+ * Calculate attenuation coefficient from original extract.
+ * @module attenuationCoefficient
+ * @param  {number} oe original extract (oe)
+ * @see Dr. Michael Hall article, Zymurgy, Summer 1995
+ * @return {number} q = .22 + (.001 * OE)
+ *
+ * @example
+ * // returns 3.07
+ * attenuationCoefficient(21.1);
+ */
+
+export const attenuationCoefficient = (oe) => {
+  if (isNum(oe)) {
+    const calc = 0.22 + (0.001 * oe);
+    return calc;
+  }
+
+  // if its not a number, throw an error
+  throw new Error('attenuationCoefficient arguments must be a number');
+};
+
+
 /**
  * Calculate real extract from starting gravity & final gravity.
  * @module realExtract
  * @param  {number} og original gravity (og)
  * @param  {number} fg final gravity (fg)
- * @see {@link http://hbd.org/ensmingr/|hbd.org/ensmingr}
- * @return {number}    (0.1808 × °Pi) + (0.8192 × °Pf)
+ * @see Dr. Michael Hall article, Zymurgy, Summer 1995
+ * @see (not currently used) {@link http://hbd.org/ensmingr/|hbd.org/ensmingr}
+ * @return {number}    RE = ((q * OE) + AE) / (1 + q)
  *
  * @example
- * // returns 6.3544
+ * // returns 6.5697
  * realExtract(1.088, 1.012);
  */
 
 export const realExtract = (og, fg) => {
   if (isNum(og, fg)) {
-    const calc = (0.1808 * sg2plato(og)) + (0.8192 * sg2plato(fg));
-    return calc;
+    const oe = originalExtract(og);
+    const ae = apparentExtract(fg);
+    const q = attenuationCoefficient(oe);
+    const calc = ((q * oe) + ae) / (1 + q);
+    const calcRound = round(calc, 4);
+    return calcRound;
   }
 
   // if its not a number, throw an error
   throw new Error('arguments must be a number');
 };
 
+
+/**
+ * Calculates the Alcohol by weight (ABW)
+ * @module abw
+ * @param  {number} og The original gravity (og)
+ * @param  {number} fg The final gravity (nfg)
+ * @return {number} (abv x 0.79336) / fg
+ *
+ * @example
+ * // returns 7.23
+ * abw(1.088, 1.019);
+ */
+
+export const abw = (og, fg) => {
+  if (!isNum(og, fg)) {
+    // if arguments are not a number, throw error
+    throw new Error('arguments must be a number');
+  } else if (og < fg) {
+    // if original gravity is not greater than final gravity, throw error
+    throw new Error('Original Gravity should be greater than Final Gravity');
+  } else {
+    const oe = originalExtract(og);
+    const re = realExtract(og, fg);
+    const calc = (oe - re) / (2.0665 - (0.010665 * oe));
+    const calcRound = round(calc, 2);
+
+    return calcRound;
+  }
+};
+
+/**
+ * Calculates the alcohol by volume (abv) <br>
+ * @module abv
+ * @param  {number} og original gravity (og)
+ * @param  {number} fg final gravity (fg)
+ * @return {number} abw * (FG / .749);
+ *
+ * @example
+ * // returns 10.2
+ * abv(1.089, 1.012);
+ */
+
+export const abv = (og, fg) => {
+  if (!isNum(og, fg)) {
+    // if not a number, throw an error
+    throw new Error('arguments must be a number');
+  } else if (og < fg) {
+    // if original gravity is less than final gravity, throw an error
+    throw new Error('Original Gravity should be greater than Final Gravity');
+  } else {
+    const getAbw = abw(og, fg);
+    const calc = getAbw * (fg / 0.794);
+    const calcRound = round(calc, 2);
+    return calcRound;
+  }
+};
 
 /**
 * Calculate number of calories from Alcohol in 12oz serving.
@@ -247,7 +320,7 @@ export const aAttenuation = (og, fg) => {
  * @return {number}    100 x (1 - (real extract / °Pi)
  *
  * @example
- * // return 69.9
+ * // return 68.9
  * rAttenuation(1.088, 1.012);
  */
 
@@ -768,7 +841,12 @@ export const postBoilGravity = (startVol, sg, finalVol) => {
  * estimateOriginalGravity(429, 46, 75, 6)
  */
 
-export const estimateOriginalGravity = (gravityPoints, sugarPoints, efficiency, volume) => {
+export const estimateOriginalGravity = (
+  gravityPoints,
+  sugarPoints,
+  efficiency,
+  volume // eslint-disable-line
+) => {
   if (isNum(gravityPoints, efficiency, volume)) {
     // first get the gravity points for sugars
     const sugarGravityPoints = sugarPoints / volume;

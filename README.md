@@ -36,20 +36,29 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 ## Modules
 
 <dl>
-<dt><a href="#module_abv">abv</a> ⇒ <code>number</code></dt>
-<dd><p>Calculates the alcohol by volume (abv) <br></p>
-</dd>
-<dt><a href="#module_abw">abw</a> ⇒ <code>number</code></dt>
-<dd><p>Calculates the Alcohol by weight (ABW)</p>
-</dd>
 <dt><a href="#module_sg2plato">sg2plato</a> ⇒ <code>number</code></dt>
 <dd><p>Convert specific gravity (sg) to plato</p>
 </dd>
 <dt><a href="#module_plato2sg">plato2sg</a> ⇒ <code>number</code></dt>
 <dd><p>Convert plato to specific gravity (sg)</p>
 </dd>
+<dt><a href="#module_originalExtract">originalExtract</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate original extract from original gravity.</p>
+</dd>
+<dt><a href="#module_apparentExtract">apparentExtract</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate apparent extract from final gravity.</p>
+</dd>
+<dt><a href="#module_attenuationCoefficient">attenuationCoefficient</a> ⇒ <code>number</code></dt>
+<dd><p>Calculate attenuation coefficient from original extract.</p>
+</dd>
 <dt><a href="#module_realExtract">realExtract</a> ⇒ <code>number</code></dt>
 <dd><p>Calculate real extract from starting gravity &amp; final gravity.</p>
+</dd>
+<dt><a href="#module_abw">abw</a> ⇒ <code>number</code></dt>
+<dd><p>Calculates the Alcohol by weight (ABW)</p>
+</dd>
+<dt><a href="#module_abv">abv</a> ⇒ <code>number</code></dt>
+<dd><p>Calculates the alcohol by volume (abv) <br></p>
 </dd>
 <dt><a href="#module_caloriesAlcohol">caloriesAlcohol</a> ⇒ <code>number</code></dt>
 <dd><p>Calculate number of calories from Alcohol in 12oz serving.</p>
@@ -122,41 +131,6 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 </dd>
 </dl>
 
-<a name="module_abv"></a>
-
-## abv ⇒ <code>number</code>
-Calculates the alcohol by volume (abv) <br>
-
-**Returns**: <code>number</code> - (((1.05 x (og - fg)) / fg) / 0.79) x 100;
-explore this advanced calc: ABV =(76.08 * (og-fg) / (1.775-og)) * (fg / 0.794)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| og | <code>number</code> | original gravity (og) |
-| fg | <code>number</code> | final gravity (fg) |
-
-**Example**  
-```js
-// returns 9.84
-abv(1.088, 1.013);
-```
-<a name="module_abw"></a>
-
-## abw ⇒ <code>number</code>
-Calculates the Alcohol by weight (ABW)
-
-**Returns**: <code>number</code> - (abv x 0.79336) / fg  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| og | <code>number</code> | The original gravity (og) |
-| fg | <code>number</code> | The final gravity (nfg) |
-
-**Example**  
-```js
-// returns 7.71
-abw(1.088, 1.013);
-```
 <a name="module_sg2plato"></a>
 
 ## sg2plato ⇒ <code>number</code>
@@ -189,13 +163,68 @@ Convert plato to specific gravity (sg)
 // returns 1.074
 plato2sg(18);
 ```
+<a name="module_originalExtract"></a>
+
+## originalExtract ⇒ <code>number</code>
+Calculate original extract from original gravity.
+
+**Returns**: <code>number</code> - OE = -668.962 + (1262.45 * OG ) - (776.43 * OG^2) + (182.94 * OG^3)  
+**See**: Dr. Michael Hall article, Zymurgy, Summer 1995  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| og | <code>number</code> | original gravity (og) |
+
+**Example**  
+```js
+// returns 21.1
+originalExtract(1.088);
+```
+<a name="module_apparentExtract"></a>
+
+## apparentExtract ⇒ <code>number</code>
+Calculate apparent extract from final gravity.
+
+**Returns**: <code>number</code> - AE = -668.962 + (1262.45 * FG ) - (776.43 * FG^2) + (182.94 * FG^3)  
+**See**: Dr. Michael Hall article, Zymurgy, Summer 1995  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| fg | <code>number</code> | final gravity (fg) |
+
+**Example**  
+```js
+// returns 3.07
+apparentExtract(1.012);
+```
+<a name="module_attenuationCoefficient"></a>
+
+## attenuationCoefficient ⇒ <code>number</code>
+Calculate attenuation coefficient from original extract.
+
+**Returns**: <code>number</code> - q = .22 + (.001 * OE)  
+**See**: Dr. Michael Hall article, Zymurgy, Summer 1995  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| oe | <code>number</code> | original extract (oe) |
+
+**Example**  
+```js
+// returns 3.07
+attenuationCoefficient(21.1);
+```
 <a name="module_realExtract"></a>
 
 ## realExtract ⇒ <code>number</code>
 Calculate real extract from starting gravity & final gravity.
 
-**Returns**: <code>number</code> - (0.1808 × °Pi) + (0.8192 × °Pf)  
-**See**: [hbd.org/ensmingr](http://hbd.org/ensmingr/)  
+**Returns**: <code>number</code> - RE = ((q * OE) + AE) / (1 + q)  
+**See**
+
+- Dr. Michael Hall article, Zymurgy, Summer 1995
+- (not currently used) [hbd.org/ensmingr](http://hbd.org/ensmingr/)
+
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -204,8 +233,42 @@ Calculate real extract from starting gravity & final gravity.
 
 **Example**  
 ```js
-// returns 6.3544
+// returns 6.5697
 realExtract(1.088, 1.012);
+```
+<a name="module_abw"></a>
+
+## abw ⇒ <code>number</code>
+Calculates the Alcohol by weight (ABW)
+
+**Returns**: <code>number</code> - (abv x 0.79336) / fg  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| og | <code>number</code> | The original gravity (og) |
+| fg | <code>number</code> | The final gravity (nfg) |
+
+**Example**  
+```js
+// returns 7.23
+abw(1.088, 1.019);
+```
+<a name="module_abv"></a>
+
+## abv ⇒ <code>number</code>
+Calculates the alcohol by volume (abv) <br>
+
+**Returns**: <code>number</code> - abw * (FG / .749);  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| og | <code>number</code> | original gravity (og) |
+| fg | <code>number</code> | final gravity (fg) |
+
+**Example**  
+```js
+// returns 10.2
+abv(1.089, 1.012);
 ```
 <a name="module_caloriesAlcohol"></a>
 
@@ -294,7 +357,7 @@ Calculate the real attenuation
 
 **Example**  
 ```js
-// return 69.9
+// return 68.9
 rAttenuation(1.088, 1.012);
 ```
 <a name="module_aau"></a>
