@@ -384,6 +384,6 @@ describe('estimateOriginalGravity', () => {
   });
 
   it('Should return estimated OG', () => {
-    assert.equal(calc.estimateOriginalGravity(350, 74, 5.5), 1.047);
+    assert.equal(calc.estimateOriginalGravity(429, 46, 75, 6), 1.061);
   });
 });

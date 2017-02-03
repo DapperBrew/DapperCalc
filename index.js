@@ -15,6 +15,7 @@ const isNum = (...args) => every(args, isFinite);
  * @param  {number} og original gravity (og)
  * @param  {number} fg final gravity (fg)
  * @return {number} (((1.05 x (og - fg)) / fg) / 0.79) x 100;
+ * explore this advanced calc: ABV =(76.08 * (og-fg) / (1.775-og)) * (fg / 0.794)
  *
  * @example
  * // returns 9.84
@@ -756,19 +757,25 @@ export const postBoilGravity = (startVol, sg, finalVol) => {
  * Estimate Original Gravity
  * @module estimateOriginalGravity
  * @param {number} gravityPoints Total gravity points of fermentables
- * @param {number} efficiency estimated brewhouse efficiency
- * @param {number} finalVolume final volume into fermentor
- * @todo support final volume in liters
- * @return {number} (gravityPoints * efficiency) / finalVolume
+ * @param {number} sugarPoints Total gravity points from sugars (dextrose, etc)
+ * @param {number} efficiency (mash or brewhouse)
+ * @param {number} vol into fermentor (if brewhouse eff) or pre-boil vol (if mash eff)
+ * @todo support liters
+ * @return {number} (gravityPoints * efficiency) / volume
  *
  * @example
- * // return 1.047
- * estimateOriginalGravity(350, 74, 5.5)
+ * // return 1.061
+ * estimateOriginalGravity(429, 46, 75, 6)
  */
 
-export const estimateOriginalGravity = (gravityPoints, efficiency, finalVolume) => {
-  if (isNum(gravityPoints, efficiency, finalVolume)) {
-    let calc = ((gravityPoints * efficiency * 0.01) / finalVolume);
+export const estimateOriginalGravity = (gravityPoints, sugarPoints, efficiency, volume) => {
+  if (isNum(gravityPoints, efficiency, volume)) {
+    // first get the gravity points for sugars
+    const sugarGravityPoints = sugarPoints / volume;
+    // then get gravity points for all fermentables
+    let calc = ((gravityPoints * efficiency * 0.01) / volume);
+    // combine the two
+    calc += sugarGravityPoints;
     calc = gp2sg(calc);
     const calcRound = round(calc, 3);
     return calcRound;
