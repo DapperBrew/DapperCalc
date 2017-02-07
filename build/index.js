@@ -840,7 +840,8 @@ var postBoilGravity = exports.postBoilGravity = function postBoilGravity(startVo
  * estimateOriginalGravity(429, 46, 75, 6)
  */
 
-var estimateOriginalGravity = exports.estimateOriginalGravity = function estimateOriginalGravity(gravityPoints, sugarPoints, efficiency, volume) {
+var estimateOriginalGravity = exports.estimateOriginalGravity = function estimateOriginalGravity(gravityPoints, sugarPoints, efficiency, volume // eslint-disable-line
+) {
   if (isNum(gravityPoints, efficiency, volume)) {
     // first get the gravity points for sugars
     var sugarGravityPoints = sugarPoints / volume;
@@ -897,7 +898,8 @@ var estimateFinalGP = exports.estimateFinalGP = function estimateFinalGP(attenua
  * estimateFinalGravity(54, 17, 75, 154)
  */
 
-var estimateFinalGravity = exports.estimateFinalGravity = function estimateFinalGravity(grainPoints, sugarPoints, attenuation, mashTemp) {
+var estimateFinalGravity = exports.estimateFinalGravity = function estimateFinalGravity(grainPoints, sugarPoints, attenuation, mashTemp // eslint-disable-line
+) {
   if (isNum(grainPoints, sugarPoints, attenuation)) {
     var finalAttenuation = attenuation;
 

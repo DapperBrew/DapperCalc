@@ -846,7 +846,8 @@ export const estimateOriginalGravity = (
   gravityPoints,
   sugarPoints,
   efficiency,
-  volume) => {
+  volume // eslint-disable-line
+) => {
   if (isNum(gravityPoints, efficiency, volume)) {
     // first get the gravity points for sugars
     const sugarGravityPoints = sugarPoints / volume;
@@ -908,7 +909,8 @@ export const estimateFinalGravity = (
   grainPoints,
   sugarPoints,
   attenuation,
-  mashTemp) => {
+  mashTemp // eslint-disable-line
+) => {
   if (isNum(grainPoints, sugarPoints, attenuation)) {
     let finalAttenuation = attenuation;
 
