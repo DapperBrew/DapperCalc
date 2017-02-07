@@ -206,7 +206,7 @@ export const abv = (og, fg) => {
   } else {
     const getAbw = abw(og, fg);
     const calc = getAbw * (fg / 0.794);
-    const calcRound = round(calc, 2);
+    const calcRound = round(calc, 1);
     return calcRound;
   }
 };

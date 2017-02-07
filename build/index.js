@@ -219,7 +219,7 @@ var abv = exports.abv = function abv(og, fg) {
   } else {
     var getAbw = abw(og, fg);
     var calc = getAbw * (fg / 0.794);
-    var calcRound = (0, _round2.default)(calc, 2);
+    var calcRound = (0, _round2.default)(calc, 1);
     return calcRound;
   }
 };
