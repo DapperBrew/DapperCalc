@@ -377,7 +377,7 @@ describe('Boil Off test', () => {
   });
 });
 
-// Post Boil Gravity Calculation Test
+// Estimate Original Gravity
 describe('estimateOriginalGravity', () => {
   it('only allow numbers', () => {
     assert.throw(() => { calc.estimateOriginalGravity(7, 'meh', 72, 5.5); }, Error);
@@ -385,5 +385,29 @@ describe('estimateOriginalGravity', () => {
 
   it('Should return estimated OG', () => {
     assert.equal(calc.estimateOriginalGravity(429, 46, 75, 6), 1.061);
+  });
+});
+
+// Estimate Final Gravity Points
+describe('estimateFinalGP', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.estimateFinalGP('meh', 54); }, Error);
+  });
+
+  it('Should return estimated Final Gravity Points', () => {
+    assert.equal(calc.estimateFinalGP(75, 54), 13.5);
+    assert.equal(calc.estimateFinalGP(75, 54, true), 14);
+  });
+});
+
+// Estimate Final Gravity Points
+describe('estimateFinalGravity', () => {
+  it('only allow numbers', () => {
+    assert.throw(() => { calc.estimateFinalGravity('meh', 17, 75, 154); }, Error);
+  });
+
+  it('Should return estimated Final Gravity Points', () => {
+    assert.equal(calc.estimateFinalGravity(54, 17, 75), 1.010);
+    assert.equal(calc.estimateFinalGravity(54, 17, 75, 154), 1.012);
   });
 });

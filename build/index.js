@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.estimateOriginalGravity = exports.postBoilGravity = exports.postBoilVolume = exports.shrinkage = exports.totalBoilLoss = exports.evapLossPerHour = exports.adjustExtract = exports.adjustWater = exports.dilute = exports.gp2sg = exports.sg2gp = exports.srm = exports.mcu = exports.lovibond2srm = exports.srm2lovibond = exports.ibu = exports.utilization = exports.aau = exports.rAttenuation = exports.aAttenuation = exports.caloriesTotal = exports.caloriesCarbs = exports.caloriesAlcohol = exports.abv = exports.abw = exports.realExtract = exports.attenuationCoefficient = exports.apparentExtract = exports.originalExtract = exports.plato2sg = exports.sg2plato = undefined;
+exports.estimateFinalGravity = exports.estimateFinalGP = exports.estimateOriginalGravity = exports.postBoilGravity = exports.postBoilVolume = exports.shrinkage = exports.totalBoilLoss = exports.evapLossPerHour = exports.adjustExtract = exports.adjustWater = exports.dilute = exports.gp2sg = exports.sg2gp = exports.srm = exports.mcu = exports.lovibond2srm = exports.srm2lovibond = exports.ibu = exports.utilization = exports.aau = exports.rAttenuation = exports.aAttenuation = exports.caloriesTotal = exports.caloriesCarbs = exports.caloriesAlcohol = exports.abv = exports.abw = exports.realExtract = exports.attenuationCoefficient = exports.apparentExtract = exports.originalExtract = exports.plato2sg = exports.sg2plato = undefined;
 
 var _round = require('lodash/round');
 
@@ -840,8 +840,7 @@ var postBoilGravity = exports.postBoilGravity = function postBoilGravity(startVo
  * estimateOriginalGravity(429, 46, 75, 6)
  */
 
-var estimateOriginalGravity = exports.estimateOriginalGravity = function estimateOriginalGravity(gravityPoints, sugarPoints, efficiency, volume // eslint-disable-line
-) {
+var estimateOriginalGravity = exports.estimateOriginalGravity = function estimateOriginalGravity(gravityPoints, sugarPoints, efficiency, volume) {
   if (isNum(gravityPoints, efficiency, volume)) {
     // first get the gravity points for sugars
     var sugarGravityPoints = sugarPoints / volume;
@@ -854,4 +853,76 @@ var estimateOriginalGravity = exports.estimateOriginalGravity = function estimat
     return calcRound;
   }
   throw new Error('arguments must be a number');
+};
+
+/**
+ * Estimate Final Gravity Points
+ * @module estimateFinalGravity
+ * @param {number} attenuation Attenuiation % from yeast
+ * @param {number} gravityPoints Gravity points
+ * @param {bool} rounded if return value should be rounded (optional)
+ * @return {number} Final GP = (1 - (attenuation)) * gravityPoints
+ * @todo allow to adjust center temp & slope %
+ *
+ * @example
+ * // return 13.5
+ * estimateFinalGravity(75, 54)
+ *
+ * // return 14
+ * estimateFinalGravity(75, 54, true)
+ */
+
+var estimateFinalGP = exports.estimateFinalGP = function estimateFinalGP(attenuation, gravityPoints, rounded) {
+  if (isNum(attenuation, gravityPoints)) {
+    var calc = (1 - attenuation * 0.01) * gravityPoints;
+    if (rounded) {
+      calc = (0, _round2.default)(calc, 0);
+    }
+    return calc;
+  }
+  throw new Error('estimateFinalGP must be a number');
+};
+
+/**
+ * Estimate Final Gravity (adjusted for simple sugars & mash temp)
+ * @module estimateFinalGravity
+ * @param {number} grainPoints Total gravity points from grains (exclude sugars like dextrose)
+ * @param {number} sugarPoints Total gravity points from sugars (dextrose, etc)
+ * @param {number} attenuation % from yeast
+ * @param {number} mashTemp (optional)
+ * @return {number} FG = (1 - (attenuation x .01)) * GP
+ *
+ * @example
+ * // return 1.061
+ * estimateFinalGravity(54, 17, 75, 154)
+ */
+
+var estimateFinalGravity = exports.estimateFinalGravity = function estimateFinalGravity(grainPoints, sugarPoints, attenuation, mashTemp) {
+  if (isNum(grainPoints, sugarPoints, attenuation)) {
+    var finalAttenuation = attenuation;
+
+    // first, update attenuation from provided mash temp
+    if (mashTemp) {
+      // constants (may update formula to customize later)
+      var adjustTempConstant = 151;
+      var adjustPerDegree = -1.25;
+
+      // how much to adjust attenuation because of mash temp
+      var attenuationAdjust = (mashTemp - adjustTempConstant) * adjustPerDegree;
+      finalAttenuation = attenuation + attenuationAdjust;
+    }
+
+    // first get the gravity points for grains (or all non-simple sugars)
+    var finalGrainPoints = estimateFinalGP(finalAttenuation, grainPoints);
+    // then get gravity points for all simple sugars
+    var finalSugarPoints = estimateFinalGP(122, sugarPoints);
+    // combine
+    var finalPoints = finalGrainPoints + finalSugarPoints;
+    // convert to specific gravity
+    var calc = gp2sg(finalPoints);
+
+    calc = calc.toFixed(3);
+    return calc;
+  }
+  throw new Error('estimateFinalGravity arguments must be a number');
 };

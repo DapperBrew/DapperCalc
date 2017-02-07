@@ -826,6 +826,7 @@ export const postBoilGravity = (startVol, sg, finalVol) => {
   throw new Error('arguments must be a number');
 };
 
+
 /**
  * Estimate Original Gravity
  * @module estimateOriginalGravity
@@ -845,8 +846,7 @@ export const estimateOriginalGravity = (
   gravityPoints,
   sugarPoints,
   efficiency,
-  volume // eslint-disable-line
-) => {
+  volume) => {
   if (isNum(gravityPoints, efficiency, volume)) {
     // first get the gravity points for sugars
     const sugarGravityPoints = sugarPoints / volume;
@@ -859,4 +859,81 @@ export const estimateOriginalGravity = (
     return calcRound;
   }
   throw new Error('arguments must be a number');
+};
+
+
+/**
+ * Estimate Final Gravity Points
+ * @module estimateFinalGravity
+ * @param {number} attenuation Attenuiation % from yeast
+ * @param {number} gravityPoints Gravity points
+ * @param {bool} rounded if return value should be rounded (optional)
+ * @return {number} Final GP = (1 - (attenuation)) * gravityPoints
+ * @todo allow to adjust center temp & slope %
+ *
+ * @example
+ * // return 13.5
+ * estimateFinalGravity(75, 54)
+ *
+ * // return 14
+ * estimateFinalGravity(75, 54, true)
+ */
+
+export const estimateFinalGP = (attenuation, gravityPoints, rounded) => {
+  if (isNum(attenuation, gravityPoints)) {
+    let calc = (1 - (attenuation * 0.01)) * gravityPoints;
+    if (rounded) {
+      calc = round(calc, 0);
+    }
+    return calc;
+  }
+  throw new Error('estimateFinalGP must be a number');
+};
+
+/**
+ * Estimate Final Gravity (adjusted for simple sugars & mash temp)
+ * @module estimateFinalGravity
+ * @param {number} grainPoints Total gravity points from grains (exclude sugars like dextrose)
+ * @param {number} sugarPoints Total gravity points from sugars (dextrose, etc)
+ * @param {number} attenuation % from yeast
+ * @param {number} mashTemp (optional)
+ * @return {number} FG = (1 - (attenuation x .01)) * GP
+ *
+ * @example
+ * // return 1.061
+ * estimateFinalGravity(54, 17, 75, 154)
+ */
+
+export const estimateFinalGravity = (
+  grainPoints,
+  sugarPoints,
+  attenuation,
+  mashTemp) => {
+  if (isNum(grainPoints, sugarPoints, attenuation)) {
+    let finalAttenuation = attenuation;
+
+    // first, update attenuation from provided mash temp
+    if (mashTemp) {
+      // constants (may update formula to customize later)
+      const adjustTempConstant = 151;
+      const adjustPerDegree = -1.25;
+
+      // how much to adjust attenuation because of mash temp
+      const attenuationAdjust = (mashTemp - adjustTempConstant) * adjustPerDegree;
+      finalAttenuation = attenuation + attenuationAdjust;
+    }
+
+    // first get the gravity points for grains (or all non-simple sugars)
+    const finalGrainPoints = estimateFinalGP(finalAttenuation, grainPoints);
+    // then get gravity points for all simple sugars
+    const finalSugarPoints = estimateFinalGP(122, sugarPoints);
+    // combine
+    const finalPoints = finalGrainPoints + finalSugarPoints;
+    // convert to specific gravity
+    let calc = gp2sg(finalPoints);
+
+    calc = calc.toFixed(3);
+    return calc;
+  }
+  throw new Error('estimateFinalGravity arguments must be a number');
 };

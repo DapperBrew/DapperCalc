@@ -129,6 +129,12 @@ DapperCalc contains various calculations that power DapperBrew. This work is ong
 <dt><a href="#module_estimateOriginalGravity">estimateOriginalGravity</a> ⇒ <code>number</code></dt>
 <dd><p>Estimate Original Gravity</p>
 </dd>
+<dt><a href="#module_estimateFinalGravity">estimateFinalGravity</a> ⇒ <code>number</code></dt>
+<dd><p>Estimate Final Gravity Points</p>
+</dd>
+<dt><a href="#module_estimateFinalGravity">estimateFinalGravity</a> ⇒ <code>number</code></dt>
+<dd><p>Estimate Final Gravity (adjusted for simple sugars &amp; mash temp)</p>
+</dd>
 </dl>
 
 <a name="module_sg2plato"></a>
@@ -765,4 +771,48 @@ Estimate Original Gravity
 ```js
 // return 1.061
 estimateOriginalGravity(429, 46, 75, 6)
+```
+<a name="module_estimateFinalGravity"></a>
+
+## estimateFinalGravity ⇒ <code>number</code>
+Estimate Final Gravity Points
+
+**Returns**: <code>number</code> - Final GP = (1 - (attenuation)) * gravityPoints  
+**Todo**
+
+- [ ] allow to adjust center temp & slope %
+
+
+| Param | Type | Description |
+| --- | --- | --- |
+| attenuation | <code>number</code> | Attenuiation % from yeast |
+| gravityPoints | <code>number</code> | Gravity points |
+| rounded | <code>bool</code> | if return value should be rounded (optional) |
+
+**Example**  
+```js
+// return 13.5
+estimateFinalGravity(75, 54)
+
+// return 14
+estimateFinalGravity(75, 54, true)
+```
+<a name="module_estimateFinalGravity"></a>
+
+## estimateFinalGravity ⇒ <code>number</code>
+Estimate Final Gravity (adjusted for simple sugars & mash temp)
+
+**Returns**: <code>number</code> - FG = (1 - (attenuation x .01)) * GP  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| grainPoints | <code>number</code> | Total gravity points from grains (exclude sugars like dextrose) |
+| sugarPoints | <code>number</code> | Total gravity points from sugars (dextrose, etc) |
+| attenuation | <code>number</code> | % from yeast |
+| mashTemp | <code>number</code> | (optional) |
+
+**Example**  
+```js
+// return 1.061
+estimateFinalGravity(54, 17, 75, 154)
 ```
